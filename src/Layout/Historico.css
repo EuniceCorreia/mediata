@@ -1,0 +1,308 @@
+/* Histórico Styles */
+/*.mediaAtContainer {
+  font-family: 'Arial', sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #efeeea;
+}
+
+.header {
+  background-color: #1f553f; /* verde escuro */
+  /*display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+  height: 3rem;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.title {
+  user-select: none;
+}
+
+.icons {
+  display: flex;
+  gap: 1rem;
+}
+
+.iconButton {
+  width: 24px;
+  height: 24px;
+  background-color: white;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Layout principal em duas colunas */
+/*.mainContent {
+  flex: 1;
+  display: flex;
+  height: calc(100vh - 3rem);
+}
+
+/* Painel histórico */
+/*.historicoPanel {
+  width: 25%;
+  background-color: white;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+}
+
+.historicoTitle {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #1f553f; /* verde */
+  /*border-bottom: 1px solid #ddd;
+  user-select: none;
+}
+
+.iconHistorico {
+  margin-right: 0.5rem;
+  font-size: 1.3rem;
+}
+
+/* Lista histórico */
+/*.historicoList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.listItem {
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  cursor: default;
+  color: #1f553f; /* verde */
+  /*display: flex;
+  align-items: center;
+  user-select: none;
+}
+
+.listItem .arrow {
+  margin-right: 0.3rem;
+  font-weight: 700;
+}
+
+/* Fundo cinza claro para itens ímpares (1, 3, 5...) */
+/*.shaded {
+  background-color: #a9c5af; /* verde claro */
+  /*color: white;
+}
+
+/* Painel conteúdo */
+/*.contentPanel {
+  flex: 1;
+  position: relative;
+  background-color: #efeeea;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.question {
+  color: #1f553f;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  z-index: 2;
+}
+
+/* Caixa de input estilo Google Search */
+/*.inputSearch {
+  background: white;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  width: 300px;
+  height: 40px;
+  padding: 0 1rem;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  z-index: 2;
+}
+
+.inputSearch input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 1rem;
+}
+
+.btnPlus, .btnVoice {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #1f553f;
+  cursor: pointer;
+  user-select: none;
+}
+
+.btnPlus {
+  margin-right: 0.5rem;
+  font-weight: bold;
+}
+
+.btnVoice::before {
+  content: '🎤'; /* microfone */
+/*}
+
+/* Ícone de fundo grande (estetoscópio) */
+/*.backgroundIcon {
+  position: absolute;
+  font-size: 20rem;
+  color: rgba(31, 85, 63, 0.1);
+  user-select: none;
+  pointer-events: none;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}*/
+
+
+
+
+
+
+
+.historico-container {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  min-height: calc(100vh - 80px);
+}
+
+.historico-sidebar {
+  background: white;
+  padding: 2rem;
+  border-right: 1px solid var(--border-color);
+}
+
+.historico-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  color: var(--text-dark);
+}
+
+.historico-header svg {
+  color: var(--primary-green);
+}
+
+.historico-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.historico-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.historico-item:hover {
+  background-color: var(--bg-light);
+}
+
+.historico-item.ativo {
+  background-color: var(--light-green);
+  color: white;
+}
+
+.historico-arrow {
+  color: var(--text-light);
+  font-size: 0.8rem;
+}
+
+.historico-item.ativo .historico-arrow {
+  color: white;
+}
+
+.historico-content {
+  padding: 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.stethoscope-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--light-green);
+  opacity: 0.1;
+  z-index: 1;
+}
+
+.historico-content h3 {
+  font-size: 2rem;
+  color: var(--text-dark);
+  margin-bottom: 3rem;
+  z-index: 2;
+  position: relative;
+}
+
+.recording-controls {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  z-index: 2;
+  position: relative;
+}
+
+.record-btn {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--light-green);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.record-btn:hover {
+  background-color: var(--primary-green);
+  transform: scale(1.1);
+}
+
+.audio-controls {
+  display: flex;
+  gap: 1rem;
+}
+
+.control-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid var(--light-green);
+  background: white;
+  color: var(--light-green);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.control-btn:hover {
+  background-color: var(--light-green);
+  color: white;
+}

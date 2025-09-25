@@ -1,0 +1,225 @@
+/* Home Styles */
+/*.home-container {
+  font-family: 'Roboto', sans-serif;
+  color: #547c5c;
+  background-color: #e7e7e3;
+  padding: 20px;
+}
+
+.home-header .logo {
+  background-color: #25552d;
+  /* Home Styles - versão consolidada e limpa */
+
+  .home-container {
+    min-height: calc(100vh - 100px);
+    padding: 3rem 2rem;
+  }
+
+  .home-main {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .home-content {
+    display: grid;
+    grid-template-columns: 1.3fr 0.9fr; /* mais espaço para o texto principal */
+    gap: 3rem; /* mais folga entre colunas */
+    align-items: center;
+  }
+
+  .home-text {
+    padding: 3rem 0;
+  }
+
+  .home-title {
+    font-size: 4rem; /* título maior */
+    font-weight: 300;
+    color: var(--primary-green);
+    margin-bottom: 1.75rem;
+    line-height: 1.08;
+  }
+
+  .title-part-one {
+    font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    font-weight: 600;
+  }
+
+  .title-part-two {
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-weight: 700;
+    display: inline-block;
+  }
+
+  .home-description {
+    font-size: 2.1rem; 
+    font-family: poppins;
+    line-height: 1.75; /* mais espaço entre linhas */
+    color: var(--text-light);
+    margin-bottom: 3rem; /* mais espaço antes dos botões */
+    text-align: justify;
+    max-width: 68ch; /* largura de leitura otimizada */
+    letter-spacing: 0.01em;
+  }
+
+  .home-highlight {
+    color: var(--primary-green);
+    font-weight: 700;
+    margin-bottom: 2rem;
+    font-size: 1.6rem; /* aumentado para dar mais destaque */
+    line-height: 1.2;
+    font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    letter-spacing: 0.01em;
+  }
+
+  .home-buttons {
+    display: flex;
+    gap: 1.25rem;
+    margin-bottom: 2.25rem;
+  }
+
+
+  .home-features {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* alinhar ao topo */
+    align-items: flex-start;
+    align-self: start; /* garantir que a célula do grid fique alinhada ao início */
+    padding-top: 1.6rem; /* aumento da distância para o header */
+  }
+
+  .home-features h2 {
+    color: var(--text-dark);
+    font-size: 1.75rem;
+    margin-bottom: 2rem;
+    font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    font-weight: 600;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    justify-items: center;
+    align-items: center;
+  }
+
+  .feature-item {
+    text-align: center;
+    padding: 1rem;
+    max-width: 260px; /* um pouco mais largo */
+    transition: background-color 220ms ease, transform 220ms ease;
+    border-radius: 12px;
+  }
+
+  .feature-icon {
+    color: var(--light-green);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(47, 161, 107, 0.08); /* leve círculo de destaque */
+    width: 84px;
+    height: 84px;
+    border-radius: 999px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px;
+  }
+
+  .feature-item h3 {
+    font-size: 1.15rem; /* aumentado */
+    color: var(--text-dark);
+    font-weight: 600;
+    line-height: 1.4;
+    margin-top: 0.75rem;
+    transition: color 220ms ease, transform 220ms ease;
+  }
+
+  .feature-icon svg {
+    width: 44px;
+    height: 44px;
+    display: block;
+    fill: currentColor;
+  }
+
+  /* Hover: trocar cor do bloco, ícone e título */
+  .feature-item:hover {
+    background-color: rgba(47,161,107,0.06);
+    transform: translateY(-4px);
+  }
+
+  .feature-item:hover .feature-icon {
+    background: var(--primary-green);
+    color: white;
+    transform: scale(1.06);
+  }
+
+  .feature-item:hover .feature-icon svg {
+    fill: white;
+  }
+
+  .feature-item:hover h3 {
+    color: var(--primary-green);
+  }
+
+  /* Responsividade: empilhar colunas e centralizar funcionalidades em telas pequenas */
+  @media (max-width: 768px) {
+    .home-main {
+      padding: 1rem;
+    }
+
+    .home-content {
+      grid-template-columns: 1fr; /* empilha as colunas */
+      gap: 1.5rem;
+      align-items: stretch;
+    }
+
+    /* Ordem: primeiro o texto, depois as funcionalidades (mantém fluxo lógico) */
+    .home-text {
+      order: 1;
+      padding: 0.5rem 0;
+    }
+
+    .home-features {
+      order: 2;
+      width: 100%;
+      padding: 0.5rem 0;
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr; 
+      gap: 1rem;
+      justify-items: stretch;
+      align-items: center;
+    }
+
+    .feature-item {
+      max-width: none;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.02);
+    }
+
+    .feature-icon {
+      margin-bottom: 0;
+      flex: 0 0 56px;
+    }
+
+    .feature-item h3 {
+      font-size: 1.05rem;
+      margin: 0;
+    }
+
+    /* Ajuste de legibilidade para telas menores */
+    .home-description {
+      font-size: 1.18rem; /* ainda maior que antes p melhor leitura em mobile */
+      line-height: 1.6;
+      max-width: 100%;
+    }
+  }
