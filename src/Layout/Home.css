@@ -1,35 +1,30 @@
-/* Home Styles */
-/*.home-container {
-  font-family: 'Roboto', sans-serif;
-  color: #547c5c;
-  background-color: #e7e7e3;
-  padding: 20px;
-}
+/* Home Styles (usa fonte global Poppins) */
 
 .home-header .logo {
   background-color: #25552d;
-  /* Home Styles - versão consolidada e limpa */
+}
 
-  .home-container {
-    min-height: calc(100vh - 100px);
-    padding: 3rem 2rem;
-  }
+/* Home Styles - versão consolidada e limpa */
+.home-container {
+  min-height: calc(100vh - 100px);
+  padding: 3rem 2rem;
+}
 
-  .home-main {
-    max-width: 1400px;
-    margin: 0 auto;
-  }
+.home-main {
+  max-width: 1400px;
+  margin: 0 auto;
+}
 
-  .home-content {
-    display: grid;
-    grid-template-columns: 1.3fr 0.9fr; /* mais espaço para o texto principal */
-    gap: 3rem; /* mais folga entre colunas */
-    align-items: center;
-  }
+.home-content {
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr; /* mais espaço para o texto principal */
+  gap: 3rem; /* mais folga entre colunas */
+  align-items: center;
+}
 
-  .home-text {
-    padding: 3rem 0;
-  }
+.home-text {
+  padding: 3rem 0;
+}
 
   .home-title {
     font-size: 4rem; /* título maior */
@@ -40,8 +35,7 @@
   }
 
   .title-part-one {
-    font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-    font-weight: 600;
+    font-weight: 600; /* usa fonte global (Poppins) */
   }
 
   .title-part-two {
@@ -53,7 +47,6 @@
 
   .home-description {
     font-size: 2.1rem; 
-    font-family: poppins;
     line-height: 1.75; /* mais espaço entre linhas */
     color: var(--text-light);
     margin-bottom: 3rem; /* mais espaço antes dos botões */
@@ -68,7 +61,6 @@
     margin-bottom: 2rem;
     font-size: 1.6rem; /* aumentado para dar mais destaque */
     line-height: 1.2;
-    font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
     letter-spacing: 0.01em;
   }
 
@@ -92,7 +84,6 @@
     color: var(--text-dark);
     font-size: 1.75rem;
     margin-bottom: 2rem;
-    font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
     font-weight: 600;
   }
 

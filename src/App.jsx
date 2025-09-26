@@ -2,6 +2,7 @@ import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Home from './Home.jsx'
 import Cadastro from './Componentes/Cadastro.jsx'
+import Entrar from './Componentes/Entrar.jsx'
 import Historico from './Componentes/Historico.jsx'
 import RegistroPaciente from './Componentes/RegistroPaciente.jsx'
 import NavBar from './NavBar.jsx'
@@ -13,7 +14,8 @@ function App() {
         <NavBar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/cadastro" element={<Cadastro />} />      
+          <Route path="/cadastro" element={<Cadastro />} />     
+          <Route path="/entrar" element={<Entrar />} /> 
           <Route path="/registro-paciente" element={<RegistroPaciente />} />
           <Route path="/historico" element={<Historico />} />
         </Routes>

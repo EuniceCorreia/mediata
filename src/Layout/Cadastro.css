@@ -1,11 +1,4 @@
-/* Cadastro Styles */
-
-/*.cadastro-container {
-  font-family: 'Roboto', sans-serif;
-  background-color: #e7e7e3;
-  min-height: 100vh;
-  padding: 0;
-}
+/* Cadastro Styles (usa fonte global Poppins) */
 
 .cadastro-header {
   background-color: #25552d;
@@ -173,4 +166,58 @@
 .form-group input:focus {
   outline: none;
   border-color: var(--primary-green);
+}
+
+/* Aplicar Poppins especificamente para a área de cadastro/entrar e aumentar tamanhos */
+.cadastro-container,
+.cadastro-container *,
+.cadastro-form,
+.cadastro-form * {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Aumenta o tamanho base do texto dentro do formulário para melhorar legibilidade */
+.cadastro-form {
+  font-size: 18px;
+}
+
+.cadastro-form h2 {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 1rem; 
+}
+
+.cadastro-form .form-group label {
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.cadastro-form .form-group input {
+  font-size: 18px;
+  padding: 14px;
+}
+
+/* Estiliza botões dentro do formulário para ter fonte maior e mais toque */
+.cadastro-form .btn,
+.cadastro-form button {
+  font-size: 18px;
+  padding: 12px 28px;
+  border-radius: 25px;
+}
+
+.cadastro-form p {
+  font-size: 17px;
+}
+
+/* Responsividade: reduzir um pouco em telas pequenas */
+@media (max-width: 480px) {
+  .cadastro-form {
+    font-size: 16px;
+    padding: 2rem;
+  }
+
+  .cadastro-form h2 { font-size: 24px; }
+  .cadastro-form .form-group label { font-size: 16px; }
+  .cadastro-form .form-group input { font-size: 16px; }
+  .cadastro-form .btn, .cadastro-form button { font-size: 16px; padding: 10px 20px; }
 }

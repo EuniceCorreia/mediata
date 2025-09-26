@@ -107,6 +107,12 @@ const RegistroPaciente = () => {
             </div>
           </div>
         </div>
+
+        {!accepted && (
+          <p className="warning" style={{ color: '#b33', marginTop: '0.75rem' }}>
+            Marque a declaração abaixo para habilitar a transcrição.
+          </p>
+        )}
       </main>
     </div>
   );
@@ -124,6 +130,7 @@ function RegistroPaciente() {
   const [isRecording, setIsRecording] = useState(false)
   const [transcript, setTranscript] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
+  const [accepted, setAccepted] = useState(false)
   const mediaRecorderRef = useRef(null)
 
   const startRecording = async () => {
@@ -163,6 +170,25 @@ function RegistroPaciente() {
     }
   }
 
+  // chat-like input
+  const [chatInput, setChatInput] = useState('')
+  const [chatMessages, setChatMessages] = useState([])
+
+  const sendChat = () => {
+    const text = chatInput.trim()
+    if (!text) return
+    setChatMessages(prev => [...prev, { role: 'user', text }])
+    setChatInput('')
+    // opcional: aqui podemos integrar com backend/IA e adicionar resposta
+  }
+
+  const onChatKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      sendChat()
+    }
+  }
+
   return (
     <div className="registro-container">
       <div className="stethoscope-background">
@@ -174,12 +200,13 @@ function RegistroPaciente() {
 
       <h1>O que o paciente relatou hoje?</h1>
 
-      <div className="recording-section">
+        <div className="recording-section">
         <div className="recording-controls">
           <button 
             className={`record-main-btn ${isRecording ? 'recording' : ''}`}
             onClick={isRecording ? stopRecording : startRecording}
-            disabled={isProcessing}
+            disabled={isProcessing || !accepted}
+            title={isProcessing ? 'Processando áudio...' : (!accepted ? 'Marque a declaração para habilitar a transcrição' : 'Iniciar gravação')}
           >
             {isRecording ? (
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -206,6 +233,32 @@ function RegistroPaciente() {
               </svg>
             </button>
           </div>
+
+          {/* Chat-like input (estilo ChatGPT) */}
+          <div className="chat-area">
+            <div className="chat-messages">
+              {chatMessages.length === 0 ? (
+                <div className="chat-empty">Envie uma mensagem ou use a gravação</div>
+              ) : (
+                chatMessages.map((m, idx) => (
+                  <div key={idx} className={`chat-message ${m.role}`}>
+                    {m.text}
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="chat-input">
+              <textarea
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyDown={onChatKeyDown}
+                placeholder="Digite aqui (Enter para enviar)..."
+                rows={1}
+              />
+              <button className="chat-send" onClick={sendChat}>Enviar</button>
+            </div>
+          </div>
         </div>
 
         {isProcessing && (
@@ -220,14 +273,19 @@ function RegistroPaciente() {
               value={transcript}
               onChange={(e) => setTranscript(e.target.value)}
               placeholder="A transcrição aparecerá aqui..."
-              rows="6"
+              rows="10"
             />
           </div>
         )}
       </div>
 
       <div className="disclaimer">
-        <input type="checkbox" id="disclaimer" />
+        <input
+          type="checkbox"
+          id="disclaimer"
+          checked={accepted}
+          onChange={(e) => setAccepted(e.target.checked)}
+        />
         <label htmlFor="disclaimer">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" fill="none"/>

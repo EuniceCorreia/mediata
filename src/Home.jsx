@@ -89,7 +89,7 @@ function Home() {
               <Link to="/registro-paciente" className="btn btn-primary">
                 Testar agora
               </Link>
-              <Link to="/cadastro" className="btn btn-secondary">
+              <Link to="/entrar" className="btn btn-secondary">
                 Entrar
               </Link>
             </div>

@@ -1,10 +1,4 @@
-/* Registro Paciente Styles */
-/*.registro-container {
-  font-family: 'Roboto', sans-serif;
-  background-color: #e7e7e3;
-  min-height: 100vh;
-  position: relative;
-}
+/* Registro Paciente Styles (usa fonte global Poppins) */
 
 .registro-header {
   background-color: #25552d;
@@ -171,13 +165,51 @@
   50% { opacity: 1; }
 }
 
+/* bloco único e centralizado do disclaimer: mantém checkbox e texto juntos
+   e fixos na parte inferior, sem deslocamento em telas maiores */
 .disclaimer {
   position: fixed;
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
-  max-width: 600px;
-  width: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  max-width: 880px;
+  width: min(92%, 880px);
+  padding: 10px 18px;
+  background: rgba(255,255,255,0.02); /* leve fundo transparente para contraste quando desejado */
+  border-radius: 10px;
+  z-index: 9999;
+}
+
+/* checkbox dentro do bloco */
+.disclaimer input[type="checkbox"] {
+  margin: 0;
+  width: 22px;
+  height: 22px;
+  accent-color: var(--light-green);
+  flex: none;
+}
+
+/* label centralizado e com quebra de linha controlada */
+.disclaimer label {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+  max-width: 760px;
+  white-space: normal; /* permite quebrar em várias linhas sem empurrar para a direita */
+}
+
+.disclaimer svg {
+  color: var(--light-green);
+  width: 18px;
+  height: 18px;
 }
 
 .checkbox-container {
@@ -347,11 +379,13 @@
 
 .transcript-section textarea {
   width: 100%;
-  padding: 1.5rem;
+  padding: 1.75rem;
   border: 2px solid var(--light-green);
-  border-radius: 10px;
-  font-size: 16px;
-  font-family: inherit;
+  border-radius: 12px;
+  font-size: 18px; /* maior para melhor legibilidade */
+  line-height: 1.5;
+  font-family: 'Poppins', sans-serif;
+  min-height: 220px; /* torna o quadrado maior por padrão */
   resize: vertical;
 }
 
@@ -360,32 +394,82 @@
   border-color: var(--primary-green);
 }
 
-.disclaimer {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-top: 3rem;
+/* Chat-like styles */
+.chat-area {
+  margin-top: 1.5rem;
+  width: 100%;
   max-width: 600px;
-  z-index: 2;
-  position: relative;
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
 
-.disclaimer input[type="checkbox"] {
-  margin-top: 0.2rem;
-  min-width: 16px;
-}
-
-.disclaimer label {
-  font-size: 0.9rem;
-  color: var(--text-light);
-  cursor: pointer;
+.chat-messages {
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 12px;
   display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 8px;
+  background: #fbfbfb;
 }
 
-.disclaimer svg {
-  color: var(--light-green);
-  min-width: 16px;
-  margin-top: 0.1rem;
+.chat-empty {
+  color: var(--text-light);
+  font-size: 0.95rem;
+  text-align: center;
+  padding: 24px 0;
 }
+
+.chat-message {
+  max-width: 85%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+}
+
+.chat-message.user {
+  align-self: flex-end;
+  background: linear-gradient(90deg,#48b37a,#81c784);
+  color: white;
+}
+
+.chat-message.assistant {
+  align-self: flex-start;
+  background: #e9eef0;
+  color: #333;
+}
+
+.chat-input {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid var(--border-color);
+  background: white;
+}
+
+.chat-input textarea {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  resize: none;
+}
+
+.chat-send {
+  background: linear-gradient(90deg,#48b37a,#2d7d32);
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.chat-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* segunda definição removida para evitar conflito */
