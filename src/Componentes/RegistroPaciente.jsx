@@ -175,6 +175,9 @@ function RegistroPaciente() {
   const [chatMessages, setChatMessages] = useState([])
 
   const sendChat = () => {
+    // não permite enviar se o usuário não aceitou a declaração
+    if (!accepted) return
+
     const text = chatInput.trim()
     if (!text) return
     setChatMessages(prev => [...prev, { role: 'user', text }])
@@ -213,8 +216,10 @@ function RegistroPaciente() {
                 <rect x="6" y="6" width="12" height="12" rx="2" fill="white"/>
               </svg>
             ) : (
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="6" fill="white"/>
+              /* exibe um estetoscópio com baixa opacidade, parecendo parte do fundo */
+              <svg className="stethoscope-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                <path d="M11 2a2 2 0 0 0-2 2v6.5a0.5 0.5 0 0 1-0.5 0.5h-2a0.5 0.5 0 0 1-0.5-0.5V4a2 2 0 0 0-4 0v6.5A4.5 4.5 0 0 0 6.5 15H8a2 2 0 0 1 2 2v1a2 2 0 0 0 4 0v-1a2 2 0 0 1 2-2h1.5a4.5 4.5 0 0 0 4.5-4.5V4a2 2 0 0 0-4 0v6.5a0.5 0.5 0 0 1-0.5 0.5h-2a0.5 0.5 0 0 1-0.5-0.5V4a2 2 0 0 0-2-2z" fill="currentColor" />
+                <circle cx="20" cy="18" r="2" fill="currentColor" />
               </svg>
             )}
           </button>
@@ -253,10 +258,16 @@ function RegistroPaciente() {
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 onKeyDown={onChatKeyDown}
-                placeholder="Digite aqui (Enter para enviar)..."
+                placeholder={accepted ? "Digite aqui (Enter para enviar)..." : "Marque a declaração para habilitar a digitação..."}
                 rows={1}
+                disabled={!accepted || isProcessing}
               />
-              <button className="chat-send" onClick={sendChat}>Enviar</button>
+              <button
+                className="chat-send"
+                onClick={sendChat}
+                disabled={!accepted || isProcessing || chatInput.trim() === ''}
+                title={!accepted ? 'Marque a declaração para habilitar o envio' : 'Enviar'}
+              >Enviar</button>
             </div>
           </div>
         </div>
@@ -271,8 +282,14 @@ function RegistroPaciente() {
           <div className="transcript-section">
             <textarea 
               value={transcript}
-              onChange={(e) => setTranscript(e.target.value)}
-              placeholder="A transcrição aparecerá aqui..."
+              onChange={(e) => {
+                // permitir edição da transcrição apenas se aceito
+                if (!accepted) return
+                setTranscript(e.target.value)
+              }}
+              placeholder={accepted ? "A transcrição aparecerá aqui..." : "Marque a declaração para habilitar a edição da transcrição..."}
+              readOnly={!accepted}
+              disabled={!accepted}
               rows="10"
             />
           </div>

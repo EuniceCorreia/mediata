@@ -350,6 +350,28 @@
   transform: scale(1.05);
 }
 
+/* estiliza o ícone do estetoscópio dentro do botão de gravação */
+.record-main-btn .stethoscope-icon {
+  width: 56px;
+  height: 56px;
+  color: rgba(255,255,255,0.9); /* cor base para sobrepor no botão */
+  opacity: 0.28; /* baixa opacidade para parecer parte do fundo */
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* quando o botão é hover ou foco aumente um pouco a opacidade para indicar interatividade */
+.record-main-btn:hover .stethoscope-icon,
+.record-main-btn:focus .stethoscope-icon {
+  opacity: 0.45;
+  transform: scale(1.02);
+}
+
+/* durante gravação mostramos o ícone com opacidade maior e cor neutra para indicar estado ativo */
+.record-main-btn.recording .stethoscope-icon {
+  opacity: 0.12;
+  color: rgba(255,255,255,0.95);
+}
+
 .record-main-btn.recording {
   background-color: #f44336;
   border-color: #f44336;
