@@ -86,7 +86,7 @@ function Home() {
               <strong>Mais agilidade para você, mais tempo para o paciente.</strong>
             </p>
             <div className="home-buttons">
-              <Link to="/registro-paciente" className="btn btn-primary">
+              <Link to="/cadastro" className="btn btn-primary">
                 Testar agora
               </Link>
               <Link to="/entrar" className="btn btn-secondary">
