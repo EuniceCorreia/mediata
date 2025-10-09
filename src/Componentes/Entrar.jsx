@@ -15,7 +15,13 @@ function Entrar() {
     e.preventDefault()
     // Aqui você pode integrar com autenticação real.
     console.log('Tentativa de login:', form)
-    // Simular login bem-sucedido e redirecionar para o registro
+    // Simular login bem-sucedido: marcar auth no localStorage e redirecionar para o registro
+    try {
+      localStorage.setItem('auth', 'true')
+    } catch (err) {
+      // localStorage pode falhar em alguns ambientes; ignorar erro e prosseguir
+      console.warn('localStorage unavailable:', err)
+    }
     navigate('/registro-paciente')
   }
 
