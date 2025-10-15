@@ -221,3 +221,9 @@
   .cadastro-form .form-group input { font-size: 16px; }
   .cadastro-form .btn, .cadastro-form button { font-size: 16px; padding: 10px 20px; }
 }
+.error {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}

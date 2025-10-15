@@ -1,69 +1,5 @@
-/*import React from 'react';
-import './Layout/Home.css';
-
-const Home = () => {
-  return (
-    <div className="home-container">
-      <header className="home-header">
-        <h1 className="logo">mediAta</h1>
-      </header>
-
-      <section className="home-main-content">
-        <div className="home-text-section">
-          <h2 className="home-subtitle">
-            Menos burocracia, <span className="highlight">mais cuidado.</span>
-          </h2>
-          <p className="home-description">
-            Plataforma idealizada para médicos com uma inteligência artificial para transcrever automaticamente suas consultas médicas,
-            organizar informações clínicas e sugerir diagnósticos e condutas. <br />
-            <b>Mais agilidade para você, mais tempo para o paciente.</b>
-          </p>
-          <button className="btn-testar">Testar agora</button>
-          <a href="/entrar" className="link-entrar">Entrar</a>
-        </div>
-
-        <div className="home-features-section">
-          <h3 className="features-title">Funcionalidades-chave:</h3>
-          <div className="features-grid">
-            <div className="feature-item">
-              <img src="/icons/microphone.svg" alt="Microphone Icon" />
-              <p>Transcrição Automática de Áudio em Texto</p>
-            </div>
-            <div className="feature-item">
-              <img src="/icons/prontuario.svg" alt="Prontuário Icon" />
-              <p>Geração Automática de Prontuário</p>
-            </div>
-            <div className="feature-item">
-              <img src="/icons/historico.svg" alt="Histórico Icon" />
-              <p>Histórico de pacientes</p>
-            </div>
-            <div className="feature-item">
-              <img src="/icons/edicao.svg" alt="Edição Icon" />
-              <p>Edição Rápida e Correção Manual</p>
-            </div>
-            <div className="feature-item">
-              <img src="/icons/assistente.svg" alt="Assistente Icon" />
-              <p>Assistente virtual</p>
-            </div>
-            <div className="feature-item">
-              <img src="/icons/multiplataforma.svg" alt="Multiplataforma Icon" />
-              <p>Multiplataforma</p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-};
-
-export default Home;*/
-
-
-
-
-
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import './Layout/Home.css';
 
 function Home() {
@@ -71,6 +7,7 @@ function Home() {
     <div className="home-container">
       <main className="home-main">
         <div className="home-content">
+
           <div className="home-text">
             <h1 className="home-title">
               <span className="title-part-one">Menos burocracia,</span><br />
