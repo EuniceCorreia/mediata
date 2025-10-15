@@ -1,139 +1,25 @@
-/*import React, { useState } from 'react';
-import '../Layout/RegistroPaciente.css';
-
-const RegistroPaciente = () => {
-  const [isRecording, setIsRecording] = useState(false);
-  const [audioText, setAudioText] = useState('');
-
-  const handleStartRecording = () => {
-    setIsRecording(true);
-    // Aqui você implementaria a lógica de gravação de áudio
-    console.log('Iniciando gravação...');
-  };
-
-  const handleStopRecording = () => {
-    setIsRecording(false);
-    // Aqui você implementaria a lógica para parar a gravação
-    console.log('Parando gravação...');
-  };
-
-  const handleAddNote = () => {
-    // Lógica para adicionar nota manual
-    console.log('Adicionando nota...');
-  };
-
-  return (
-    <div className="registro-container">
-      <header className="registro-header">
-        <h1 className="logo">mediAta</h1>
-        <div className="header-icons">
-          <button className="icon-btn">
-            <img 
-              src="https://placeholder-image-service.onrender.com/image/24x24?prompt=Medical clipboard icon in white&id=8b036baf-005e-4fab-b928-07ac3ed9e4e7&customer_id=cus_T4d6xUNJro4RcY" 
-              alt="Medical clipboard icon for patient records" 
-            />
-          </button>
-          <button className="icon-btn">
-            <img 
-              src="https://placeholder-image-service.onrender.com/image/24x24?prompt=User profile icon in white&id=8b036baf-005e-4fab-b928-07ac3ed9e4e7&customer_id=cus_T4d6xUNJro4RcY" 
-              alt="User profile icon for account access" 
-            />
-          </button>
-        </div>
-      </header>
-
-      <main className="registro-main">
-        <div className="stethoscope-background">
-          <img 
-            src="https://placeholder-image-service.onrender.com/image/400x400?prompt=Light gray stethoscope silhouette watermark style medical background&id=8b036baf-005e-4fab-b928-07ac3ed9e4e7&customer_id=cus_T4d6xUNJro4RcY" 
-            alt="Stethoscope silhouette background decoration" 
-            className="stethoscope-watermark"
-          />
-        </div>
-
-        <div className="content-wrapper">
-          <h2 className="main-question">O que o paciente relatou hoje?</h2>
-
-          <div className="recording-area">
-            <div className="recording-controls">
-              <button 
-                className="btn-add-note" 
-                onClick={handleAddNote}
-                title="Adicionar nota manual"
-              >
-                +
-              </button>
-
-              <div className="audio-controls">
-                <button 
-                  className={`btn-microphone ${isRecording ? 'recording' : ''}`}
-                  onClick={isRecording ? handleStopRecording : handleStartRecording}
-                  title={isRecording ? 'Parar gravação' : 'Iniciar gravação'}
-                >
-                  <img 
-                    src="https://placeholder-image-service.onrender.com/image/24x24?prompt=Microphone icon in dark green&id=8b036baf-005e-4fab-b928-07ac3ed9e4e7&customer_id=cus_T4d6xUNJro4RcY" 
-                    alt="Microphone icon for voice recording" 
-                  />
-                </button>
-
-                <button 
-                  className="btn-waveform"
-                  title="Visualizar forma de onda"
-                >
-                  <img 
-                    src="https://placeholder-image-service.onrender.com/image/24x24?prompt=Audio waveform bars icon in dark green&id=8b036baf-005e-4fab-b928-07ac3ed9e4e7&customer_id=cus_T4d6xUNJro4RcY" 
-                    alt="Audio waveform visualization icon" 
-                  />
-                </button>
-              </div>
-            </div>
-
-            {isRecording && (
-              <div className="recording-indicator">
-                <div className="pulse-animation"></div>
-                <span>Gravando...</span>
-              </div>
-            )}
-          </div>
-
-          <div className="disclaimer">
-            <div className="checkbox-container">
-              <input type="checkbox" id="terms" className="checkbox" defaultChecked />
-              <label htmlFor="terms" className="checkbox-label">
-                <span className="checkmark">✓</span>
-                Declaro que revisei as informações geradas pela plataforma MediAta e 
-                assumo total responsabilidade pelas condutas médicas descritas.
-              </label>
-            </div>
-          </div>
-        </div>
-
-        {!accepted && (
-          <p className="warning" style={{ color: '#b33', marginTop: '0.75rem' }}>
-            Marque a declaração abaixo para habilitar a transcrição.
-          </p>
-        )}
-      </main>
-    </div>
-  );
-};
-
-export default RegistroPaciente;*/
-
-
-
-
 import React, { useState, useRef } from 'react'
 import '../Layout/RegistroPaciente.css';
+import { API_BASE } from '../constants';
 
 function RegistroPaciente() {
   const [isRecording, setIsRecording] = useState(false)
   const [transcript, setTranscript] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
   const [accepted, setAccepted] = useState(false)
-  const mediaRecorderRef = useRef(null)
+  const [error, setError] = useState('');  // NOVO: Para erros do backend
+  const [success, setSuccess] = useState('');  // NOVO: Para sucesso (ex: "Salva!")
+  const [nomePaciente, setNomePaciente] = useState('');  // NOVO: Input para nome (obrigatório para backend)
+  const mediaRecorderRef = useRef(null) 
+  
+  
+  const medicoId = localStorage.getItem('medicoId');  // NOVO: Do login (Entrar.jsx)
 
   const startRecording = async () => {
+    if (!medicoId) {
+      setError('Faça login primeiro (MedicoId não encontrado).');
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       const mediaRecorder = new MediaRecorder(stream)
@@ -146,19 +32,15 @@ function RegistroPaciente() {
 
       mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(chunks, { type: 'audio/wav' })
-        // Aqui seria implementada a transcrição
-        setIsProcessing(true)
-        
-        // Simulação de transcrição
-        setTimeout(() => {
-          setTranscript("Paciente relata dor abdominal há 3 dias, localizada no quadrante superior direito, de intensidade moderada a forte, com piora após alimentação. Nega febre, náuseas ou vômitos. Refere que a dor irradia para as costas.")
-          setIsProcessing(false)
-        }, 2000)
+        // Integração com backend: Envia para transcrição/salvar
+        await enviarParaBackend(audioBlob, nomePaciente)
       }
 
       mediaRecorder.start()
       setIsRecording(true)
+      setError('')  // Limpa erro
     } catch (error) {
+      setError('Erro ao acessar microfone: ' + error.message)
       console.error('Erro ao acessar microfone:', error)
     }
   }
@@ -167,6 +49,45 @@ function RegistroPaciente() {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop()
       setIsRecording(false)
+    }
+  }
+
+  // NOVO: Função para enviar áudio ao backend (POST /api/registro/gravar)
+  const enviarParaBackend = async (audioBlob, nomePacienteInput) => {
+    if (!nomePacienteInput.trim()) {
+      setError('Digite o nome do paciente antes de gravar.');
+      return;
+    }
+    setIsProcessing(true)
+    setError('')
+    setSuccess('')
+    // Cria File do Blob (backend aceita como AudioArquivo)
+    const audioFile = new File([audioBlob], 'gravado.wav', { type: 'audio/wav' })
+    const formData = new FormData()
+    formData.append('MedicoId', medicoId)
+    formData.append('NomePaciente', nomePacienteInput)
+    formData.append('AudioArquivo', audioFile)  // Multipart para backend
+    try {
+      const response = await fetch(`${API_BASE}/registro/gravar`, {
+        method: 'POST',
+        body: formData,  // Sem headers (FormData auto)
+      })
+      if (response.ok) {
+        const data = await response.json()
+        // Backend retorna RegistroPaciente com transcricao (mock ou Flask PT-BR)
+        setTranscript(data.transcricao)  // Set real transcrição
+        setSuccess(`Consulta salva! ID: ${data.id}. Áudio: ${data.audioPath}`)
+        setNomePaciente('')  // Limpa input
+        console.log('Registro OK:', data)
+      } else {
+        const errorText = await response.text()
+        setError(errorText || 'Erro ao salvar consulta')
+      }
+      } catch (err) {
+      setError('Erro de conexão: ' + err.message)
+      console.error('Erro no envio:', err)
+    } finally {
+      setIsProcessing(false)
     }
   }
 
@@ -183,12 +104,43 @@ function RegistroPaciente() {
     setChatMessages(prev => [...prev, { role: 'user', text }])
     setChatInput('')
     // opcional: aqui podemos integrar com backend/IA e adicionar resposta
+    // Por agora, mantido como mock
   }
 
   const onChatKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       sendChat()
+    }
+  }
+
+  // NOVO: Salvar manual (se editar transcript ou chat – após accepted)
+  const salvarConsulta = async () => {
+    if (!accepted || !transcript.trim()) {
+      setError('Marque a declaração e edite a transcrição antes de salvar.')
+      return
+    }
+    // Envia transcript editado como texto (sem áudio novo – backend salva como registro)
+    const formData = new FormData()
+    formData.append('MedicoId', medicoId)
+    formData.append('NomePaciente', nomePaciente || 'Paciente Anônimo')  // Default se vazio
+    formData.append('Transcricao', transcript)  // Transcript editado/chat
+    try {
+      const response = await fetch(`${API_BASE}/registro/gravar`, {
+        method: 'POST',
+        body: formData,
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setSuccess(`Consulta salva manualmente! ID: ${data.id}`)
+        setChatMessages([])  // Limpa chat
+        console.log('Salvar manual OK:', data)
+      } else {
+        const errorText = await response.text()
+        setError(errorText)
+      }
+    } catch (err) {
+      setError('Erro de conexão: ' + err.message)
     }
   }
 
@@ -203,26 +155,39 @@ function RegistroPaciente() {
 
       <h1>O que o paciente relatou hoje?</h1>
 
-        <div className="recording-section">
-        <div className="recording-controls">
-          <button 
-            className={`record-main-btn ${isRecording ? 'recording' : ''}`}
-            onClick={isRecording ? stopRecording : startRecording}
-            disabled={isProcessing || !accepted}
-            title={isProcessing ? 'Processando áudio...' : (!accepted ? 'Marque a declaração para habilitar a transcrição' : 'Iniciar gravação')}
-          >
-            {isRecording ? (
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="6" y="6" width="12" height="12" rx="2" fill="white"/>
-              </svg>
-            ) : (
-              /* exibe um estetoscópio com baixa opacidade, parecendo parte do fundo */
-              <svg className="stethoscope-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                <path d="M11 2a2 2 0 0 0-2 2v6.5a0.5 0.5 0 0 1-0.5 0.5h-2a0.5 0.5 0 0 1-0.5-0.5V4a2 2 0 0 0-4 0v6.5A4.5 4.5 0 0 0 6.5 15H8a2 2 0 0 1 2 2v1a2 2 0 0 0 4 0v-1a2 2 0 0 1 2-2h1.5a4.5 4.5 0 0 0 4.5-4.5V4a2 2 0 0 0-4 0v6.5a0.5 0.5 0 0 1-0.5 0.5h-2a0.5 0.5 0 0 1-0.5-0.5V4a2 2 0 0 0-2-2z" fill="currentColor" />
-                <circle cx="20" cy="18" r="2" fill="currentColor" />
-              </svg>
-            )}
-          </button>
+      {/* NOVO: Input para NomePaciente (obrigatório para backend) */}
+      <div className="form-group">
+        <label>Nome do Paciente</label>
+        <input
+          type="text"
+          placeholder="Digite o nome do paciente"
+          value={nomePaciente}
+          onChange={(e) => setNomePaciente(e.target.value)}
+          disabled={isProcessing}
+          required
+        />
+      </div>
+
+      <div className="recording-section">
+      <div className="recording-controls">
+        <button 
+          className={`record-main-btn ${isRecording ? 'recording' : ''}`}
+          onClick={isRecording ? stopRecording : startRecording}
+          disabled={isProcessing || !accepted}
+          title={isProcessing ? 'Processando áudio...' : (!accepted ? 'Marque a declaração para habilitar a transcrição' : 'Iniciar gravação')}
+        >
+          {isRecording ? (
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="6" y="6" width="12" height="12" rx="2" fill="white"/>
+            </svg>
+          ) : (
+            /* exibe um estetoscópio com baixa opacidade, parecendo parte do fundo */
+            <svg className="stethoscope-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <path d="M11 2a2 2 0 0 0-2 2v6.5a0.5 0.5 0 0 1-0.5 0.5h-2a0.5 0.5 0 0 1-0.5-0.5V4a2 2 0 0 0-4 0v6.5A4.5 4.5 0 0 0 6.5 15H8a2 2 0 0 1 2 2v1a2 2 0 0 0 4 0v-1a2 2 0 0 1 2-2h1.5a4.5 4.5 0 0 0 4.5-4.5V4a2 2 0 0 0-4 0v6.5a0.5 0.5 0 0 1-0.5 0.5h-2a0.5 0.5 0 0 1-0.5-0.5V4a2 2 0 0 0-2-2z" fill="currentColor" />
+              <circle cx="20" cy="18" r="2" fill="currentColor" />
+            </svg>
+          )}
+        </button>
 
           <div className="control-buttons">
             <button className="control-btn" title="Microfone">
@@ -289,9 +254,19 @@ function RegistroPaciente() {
               }}
               placeholder={accepted ? "A transcrição aparecerá aqui..." : "Marque a declaração para habilitar a edição da transcrição..."}
               readOnly={!accepted}
-              disabled={!accepted}
+              disabled={!accepted || isProcessing}
               rows="10"
             />
+            {/* NOVO: Botão para salvar manual (após edição ou chat) */}
+            <button 
+              onClick={salvarConsulta}
+              disabled={!accepted || isProcessing || !transcript.trim()}
+              className="btn-salvar"
+              style={{ marginTop: '10px', padding: '10px', width: '100%' }}
+              title={!accepted ? 'Marque a declaração' : 'Salvar consulta editada'}
+            >
+              {isProcessing ? 'Salvando...' : 'Salvar Consulta Editada'}
+            </button>
           </div>
         )}
       </div>

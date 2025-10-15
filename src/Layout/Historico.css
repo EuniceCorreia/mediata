@@ -137,3 +137,35 @@
   background-color: var(--light-green);
   color: white;
 }
+.error {
+  color: red;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.registro-detalhes {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.transcricao-content {
+  white-space: pre-wrap;  /* Preserva quebras de linha na transcrição */
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.btn-recarga {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-recarga:hover {
+  background: #0056b3;
+}

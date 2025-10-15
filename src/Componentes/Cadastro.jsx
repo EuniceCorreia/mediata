@@ -1,141 +1,7 @@
-/*import React, { useState } from 'react';
-import '../Layout/Cadastro.css';
-
-const Cadastro = () => {
-  const [formData, setFormData] = useState({
-    nome: '',
-    sobrenome: '',
-    dataNascimento: '',
-    crm: '',
-    email: '',
-    senha: ''
-  });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Dados do cadastro:', formData);
-    // Aqui você pode implementar a lógica de cadastro
-  };
-
-  const handleVoltar = () => {
-    // Lógica para voltar à tela anterior
-    console.log('Voltar');
-  };
-
-  return (
-    <div className="cadastro-container">
-      <header className="cadastro-header">
-        <h1 className="logo">mediAta</h1>
-        <button className="btn-voltar" onClick={handleVoltar}>
-          <span className="arrow-up">^</span>
-        </button>
-      </header>
-
-      <form className="cadastro-form" onSubmit={handleSubmit}>
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="nome" className="form-label">Nome</label>
-            <input
-              type="text"
-              id="nome"
-              name="nome"
-              value={formData.nome}
-              onChange={handleInputChange}
-              className="form-input"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="sobrenome" className="form-label">Sobrenome</label>
-            <input
-              type="text"
-              id="sobrenome"
-              name="sobrenome"
-              value={formData.sobrenome}
-              onChange={handleInputChange}
-              className="form-input"
-            />
-          </div>
-        </div>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="dataNascimento" className="form-label">Data nascimento</label>
-            <input
-              type="text"
-              id="dataNascimento"
-              name="dataNascimento"
-              value={formData.dataNascimento}
-              onChange={handleInputChange}
-              placeholder="dd/mm/aa"
-              className="form-input"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="crm" className="form-label">CRM</label>
-            <input
-              type="text"
-              id="crm"
-              name="crm"
-              value={formData.crm}
-              onChange={handleInputChange}
-              className="form-input"
-            />
-          </div>
-        </div>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">e-mail</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className="form-input"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="senha" className="form-label">Senha:</label>
-            <input
-              type="password"
-              id="senha"
-              name="senha"
-              value={formData.senha}
-              onChange={handleInputChange}
-              className="form-input"
-            />
-          </div>
-        </div>
-
-        <button type="submit" className="btn-finalizar">
-          Finalizar cadastro
-        </button>
-      </form>
-    </div>
-  );
-};
-
-export default Cadastro;*/
-
-
-
-
-
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import '../Layout/Cadastro.css';
+import { API_BASE } from '../constants'
 
 function Cadastro() {
   const [formData, setFormData] = useState({
@@ -147,6 +13,8 @@ function Cadastro() {
     senha: ''
   })
 
+  const navigate = useNavigate()  // <-- useNavigate para redirecionar
+
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -155,10 +23,34 @@ function Cadastro() {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     console.log('Dados do cadastro:', formData)
     // Aqui seria implementada a lógica de cadastro
+
+   try {
+      const response = await fetch(`${API_BASE}/medico/cadastrar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+
+      if (response.ok) {
+        alert('Cadastro realizado com sucesso!')
+        navigate('/RegistroPaciente')  // Ajuste a rota conforme sua app
+      } else {
+        let errorMessage = 'Erro desconhecido'
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.message || JSON.stringify(errorData)
+        } catch {
+          // JSON inválido ou vazio
+        }
+        alert('Erro no cadastro: ' + errorMessage)
+      }
+    } catch (error) {
+      alert('Erro ao comunicar com o servidor: ' + error.message)
+    }
   }
 
   return (

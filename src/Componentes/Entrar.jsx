@@ -1,9 +1,13 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '../Layout/Cadastro.css'
+import { API_BASE } from '../constants';  // Import da constante (ajuste path se constants.js em src)
 
 function Entrar() {
   const [form, setForm] = useState({ usuario: '', senha: '' })
+  const [error, setError] = useState('');  // NOVO: Para erros do backend
+  const [loading, setLoading] = useState(false);  // NOVO: Loading no botão
+  
   const navigate = useNavigate()
 
   const handleChange = (e) => {
@@ -11,18 +15,49 @@ function Entrar() {
     setForm(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // Aqui você pode integrar com autenticação real.
-    console.log('Tentativa de login:', form)
-    // Simular login bem-sucedido: marcar auth no localStorage e redirecionar para o registro
+  const handleSubmit = async (e) => {
+    e.preventDefault()  
+    setError('')
+    setLoading(true)
+
     try {
-      localStorage.setItem('auth', 'true')
-    } catch (err) {
-      // localStorage pode falhar em alguns ambientes; ignorar erro e prosseguir
-      console.warn('localStorage unavailable:', err)
+      const response = await fetch(`${API_BASE}/medico/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          email: form.usuario,  // Mapeia 'usuario' para 'email'
+          senha: form.senha 
+        }),
+        
+      })
+    if (response.ok) {
+        const data = await response.json()
+        // Salva no localStorage para uso global (ex: em RegistroPaciente ou Historico)
+        localStorage.setItem('medicoId', data.id)
+        localStorage.setItem('medicoNome', data.nomeCompleto)
+        localStorage.setItem('auth', 'true')  // Mantém seu 'auth' para compatibilidade
+        
+        console.log('Login OK:', data)
+
+        // Navega para registro-paciente (como no seu código original)
+        navigate('/registro-paciente')
+        window.location.reload()
+      }
+      else
+      {
+        // Erro do backend (ex: 401 "Credenciais inválidas")
+        const errorText = await response.text()
+        setError(errorText || 'Erro no login')
+      }
+      } catch (err) {
+      // Erro de rede/conexão
+      setError('Erro de conexão: ' + err.message)
+      console.error('Login error:', err)
+    } finally {
+      setLoading(false)  // Para loading
     }
-    navigate('/registro-paciente')
   }
 
   return (
@@ -50,6 +85,7 @@ function Entrar() {
               onChange={handleChange}
               placeholder="e-mail ou usuário"
               required
+              disabled={loading}  // NOVO: Desabilita durante loading
             />
           </div>
         </div>
@@ -64,11 +100,18 @@ function Entrar() {
               value={form.senha}
               onChange={handleChange}
               required
+              disabled={loading}  // NOVO: Desabilita durante loading
             />
           </div>
         </div>
 
-        <button type="submit" className="btn btn-primary">Entrar</button>
+        <button type="submit" className="btn btn-primary" disabled={loading}>
+          {loading ? 'Entrando...' : 'Entrar'}  {/* NOVO: Loading text*/}
+          </button>
+
+          {/* NOVO: Mostra erro do backend */}
+        {error && <p className="error" style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
+
 
         <p style={{ marginTop: '1rem' }}>
           Ainda não tem conta? <Link to="/cadastro">Cadastre-se</Link>

@@ -136,3 +136,33 @@
   .nav-icon { padding: 0.5rem }
   .nav-back { padding: 0.45rem }
 }
+.logout-btn {
+  background: #dc3545;  /* Vermelho para logout */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background: #c82333;
+}
+
+.shortcut svg {  /* Mantido/estilizado para novos SVGs */
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+.logout-btn {
+  background: #dc3545 !important;  /* Vermelho para logout */
+  color: white !important;
+}
+
+.logout-btn:hover {
+  background: #c82333 !important;
+}
+
+.logout-btn svg {
+  stroke: white;  /* Ícone branco */
+}

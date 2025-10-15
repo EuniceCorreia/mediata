@@ -1,78 +1,103 @@
-/*import React from "react";
+import React, { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import '../Layout/Historico.css';
-
-const Historico = () => {
-  const historicoData = [
-    "xx / xx",
-    "xx / xx",
-    "xx / xx",
-    "xx / xx",
-    "xx / xx",
-    "xx / xx",
-    "xx / xx",
-    "xx / xx",
-  ];
-
-  return (
-    <div className="mediaAtContainer">
-      <header className="header">
-        <div className="title">mediAta</div>
-        <div className="icons">
-          <button className="iconButton" aria-label="Notas"></button>
-          <button className="iconButton" aria-label="Perfil"></button>
-        </div>
-      </header>
-
-      <div className="mainContent">
-        <aside className="historicoPanel">
-          <div className="historicoTitle">
-            <span className="iconHistorico" aria-hidden="true">📝</span>
-            histórico
-          </div>
-          <ul className="historicoList">
-            {historicoData.map((item, index) => (
-              <li key={index} className={index % 2 !== 0 ? "listItem shaded" : "listItem"}>
-                <span className="arrow">›</span> {item}
-              </li>
-            ))}
-          </ul>
-        </aside>
-
-        <section className="contentPanel">
-          <h2 className="question">O que o paciente relatou hoje?</h2>
-          <div className="inputSearch">
-            <button className="btnPlus" aria-label="Adicionar">+</button>
-            <input type="text" placeholder="Digite aqui..." aria-label="Relato do paciente" />
-            <button className="btnVoice" aria-label="Gravar voz"></button>
-          </div>
-          <div className="backgroundIcon" aria-hidden="true">🩺</div>
-        </section>
-      </div>
-    </div>
-  );
-};
-
-export default Historico;*/
-
-
-
-
-
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import '../Layout/Historico.css';
+import { API_BASE } from '../constants';
 
 function Historico() {
-  const [historico] = useState([
-    { id: 1, data: '15/01', ativo: true },
-    { id: 2, data: '14/01', ativo: false },
-    { id: 3, data: '13/01', ativo: true },
-    { id: 4, data: '12/01', ativo: false },
-    { id: 5, data: '11/01', ativo: true },
-    { id: 6, data: '10/01', ativo: false },
-    { id: 7, data: '09/01', ativo: true },
-    { id: 8, data: '08/01', ativo: false }
-  ])
+  const [historicos, setHistoricos] = useState([]);  // NOVO: Substitui mock por dados reais
+  const [loading, setLoading] = useState(true);  // NOVO: Loading inicial
+  const [error, setError] = useState('');  // NOVO: Erros do backend
+  const [selectedId, setSelectedId] = useState(null);  // NOVO: ID selecionado para detalhes
+  const [selectedRegistro, setSelectedRegistro] = useState(null);  // NOVO: Detalhes do selecionado
+  const [searchTerm, setSearchTerm] = useState('');  // NOVO: Para busca por paciente
+  const [pacienteHistoricos, setPacienteHistoricos] = useState([]);  // NOVO: Lista filtrada por paciente
+  const [buscandoPaciente, setBuscandoPaciente] = useState(false);  // NOVO: Loading na busca
+  const navigate = useNavigate();  // Adicionado para redirecionar
+  
+  const medicoId = localStorage.getItem('medicoId');  // NOVO: Do login (Entrar.jsx)
+  
+  useEffect(() => {
+    if (!medicoId) {
+      setError('Faça login primeiro.');
+      setLoading(false);
+      navigate('/entrar');  // Redireciona para login
+    } else {
+      loadHistorico();
+    }
+  }, [medicoId, navigate]);
+
+  const loadHistorico = async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(`${API_BASE}/registro/historico/${medicoId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setHistoricos(data);  // Set lista real (RegistroPaciente[] ordenados por data)
+        if (data.length > 0) {
+        setSelectedId(data[0].id);  // Seleciona primeiro item por default
+          setSelectedRegistro(data[0]);  // Mostra detalhes do primeiro
+        }
+
+      } else {
+        const errorText = await response.text();
+        setError(errorText || 'Erro ao carregar histórico');
+      }
+    } catch (err) {
+      setError('Erro de conexão: ' + err.message);
+      console.error('Erro no histórico:', err);
+    } finally {
+      setLoading(false);
+      }
+  };
+  // NOVO: Seleciona item na sidebar e mostra detalhes
+  const handleSelectItem = (registro) => {
+    setSelectedId(registro.id);
+    setSelectedRegistro(registro);
+    setError('');  // Limpa erro
+  };
+
+  // NOVO: Busca por paciente (GET /api/registro/historico-paciente)
+  const buscarPaciente = async () => {
+    if (!searchTerm.trim()) {
+      setError('Digite um nome para buscar.');
+      return;
+    }
+    setBuscandoPaciente(true);
+    setError('');
+    
+    try {
+      const response = await fetch(`${API_BASE}/registro/historico-paciente?nomePaciente=${encodeURIComponent(searchTerm)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setPacienteHistoricos(data);  // Set lista filtrada
+      } else {
+        const errorText = await response.text();
+        setError(errorText || 'Erro na busca');
+      }
+      } catch (err) {
+      setError('Erro de conexão: ' + err.message);
+      console.error('Erro na busca:', err);
+    } finally {
+      setBuscandoPaciente(false);
+    }
+  };
+
+  // NOVO: Recarrega histórico por médico (ex: após novo registro)
+  const recarregarHistoricoMedico = () => {
+    loadHistorico();
+  };
+
+  if (loading) {
+    return (
+      <div className="historico-container">
+        <div className="historico-content">
+           <p className="loading">Carregando histórico...</p>  {/* NOVO: Loading simples */}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="historico-container">
@@ -86,15 +111,23 @@ function Historico() {
         </div>
         
         <div className="historico-list">
-          {historico.map((item, index) => (
+          {historicos.length > 0 ? (
+          historicos.map((item) => (
             <div 
-              key={item.id} 
-              className={`historico-item ${item.ativo ? 'ativo' : ''}`}
+              key={item.id}
+              className={`historico-item ${selectedId === item.id ? 'ativo' : ''}`}  // NOVO: Ativo se selecionado
+              onClick={() => handleSelectItem(item)}  // NOVO: Clique seleciona
             >
               <span className="historico-arrow">▶</span>
-              <span className="historico-data">xx / xx</span>
+              <span className="historico-data">
+               {new Date(item.dataConsulta).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}  {/* NOVO: Formata data real como DD/MM */}
+            </span>
             </div>
-          ))}
+          ))
+        ) : ( 
+          
+         <p style={{ textAlign: 'center', color: '#666', padding: '20px' }}>Nenhum histórico encontrado.</p>  // NOVO: Se vazio
+          )}
         </div>
       </div>
 
@@ -107,6 +140,72 @@ function Historico() {
         </div>
         
         <h3>O que o paciente relatou hoje?</h3>
+
+        {/* NOVO: Botão recarregar histórico por médico */}
+        <button onClick={recarregarHistoricoMedico} className="btn-recarga">
+          Recarregar Histórico
+        </button>
+        
+        {/* NOVO: Mostra error se houver (ex: backend erro) */}
+        {error && <p className="error">{error}</p>}
+
+       {/* NOVO: Detalhes do item selecionado (se houver) */} 
+       {selectedRegistro ? (
+          <div className="registro-detalhes">
+            <h4>{selectedRegistro.nomePaciente} - {new Date(selectedRegistro.dataConsulta).toLocaleDateString('pt-BR')}</h4>
+            <p><strong>Transcrição:</strong></p>
+            <div className="transcricao-content" style={{ background: '#f9f9f9', padding: '15px', borderRadius: '5px', marginBottom: '15px' }}>
+              {selectedRegistro.transcricao}
+            </div>
+            <audio controls src={`${API_BASE.replace('/api', '')}/audios/${selectedRegistro.audioPath}`} style={{ width: '100%' }}>
+              Seu browser não suporta áudio.
+            </audio>
+          </div>
+      ) : (
+          historicos.length > 0 ? (
+            <p>Selecione um item no histórico para ver detalhes.</p>
+        ) : (
+          <p>Nenhum registro disponível. Registre uma consulta primeiro.</p>
+          )
+        )}
+
+        {/* NOVO: Seção de busca por paciente (opcional – integrada no content) */}
+        <div className="busca-paciente">
+          <h4>Buscar Histórico por Paciente</h4>
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+            <input
+              type="text"
+              placeholder="Nome do Paciente (ex: teste – busca parcial)"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ flex: 1, padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+            />
+            <button 
+              onClick={buscarPaciente} 
+              disabled={buscandoPaciente || !searchTerm.trim()}
+              className="btn-buscar"
+              style={{ padding: '8px 16px' }}
+            >
+            {buscandoPaciente ? 'Buscando...' : 'Buscar'}
+            </button>
+          </div>
+          {error && <p className="error">{error}</p>}  {/* Erro na busca */}
+          {pacienteHistoricos.length > 0 ? (
+            pacienteHistoricos.map((h) => (
+              <div key={h.id} className="registro-detalhes" style={{ marginTop: '10px' }}>
+                <h5>{h.nomePaciente} - {new Date(h.dataConsulta).toLocaleDateString('pt-BR')}</h5>
+                <p>Médico ID: {h.medicoId}</p>
+                <p><strong>Transcrição:</strong> {h.transcricao}</p>
+                <audio controls src={`${API_BASE.replace('/api', '')}/audios/${h.audioPath}`} style={{ width: '100%' }}>
+                  Seu browser não suporta áudio.
+                </audio>
+              </div>
+            ))
+            ) : (
+            !buscandoPaciente && searchTerm.trim() && <p>Nenhum histórico encontrado para "{searchTerm}".</p>
+          )}
+        </div>
+
         
         <div className="recording-controls">
           <button className="record-btn">
