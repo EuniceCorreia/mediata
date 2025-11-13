@@ -7,9 +7,11 @@ function RegistroPaciente() {
   const [transcript, setTranscript] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
   const [accepted, setAccepted] = useState(false)
+  const [acceptanceWarning, setAcceptanceWarning] = useState(false)
   const [error, setError] = useState('');  // NOVO: Para erros do backend
   const [success, setSuccess] = useState('');  // NOVO: Para sucesso (ex: "Salva!")
   const [nomePaciente, setNomePaciente] = useState('');  // NOVO: Input para nome (obrigatório para backend)
+  const [cpfPaciente, setCpfPaciente] = useState('');  // NOVO: Input para CPF
   const mediaRecorderRef = useRef(null) 
   
   
@@ -66,6 +68,7 @@ function RegistroPaciente() {
     const formData = new FormData()
     formData.append('MedicoId', medicoId)
     formData.append('NomePaciente', nomePacienteInput)
+  formData.append('CpfPaciente', cpfPaciente || '')
     formData.append('AudioArquivo', audioFile)  // Multipart para backend
     try {
       const response = await fetch(`${API_BASE}/registro/gravar`, {
@@ -124,6 +127,7 @@ function RegistroPaciente() {
     const formData = new FormData()
     formData.append('MedicoId', medicoId)
     formData.append('NomePaciente', nomePaciente || 'Paciente Anônimo')  // Default se vazio
+    formData.append('CpfPaciente', cpfPaciente || '')
     formData.append('Transcricao', transcript)  // Transcript editado/chat
     try {
       const response = await fetch(`${API_BASE}/registro/gravar`, {
@@ -168,73 +172,56 @@ function RegistroPaciente() {
         />
       </div>
 
+      {/* NOVO: Input para CPF do paciente (igual ao campo Nome) */}
+      <div className="form-group">
+        <label>CPF do Paciente</label>
+        <input
+          type="text"
+          placeholder="Digite o CPF do paciente"
+          value={cpfPaciente}
+          onChange={(e) => setCpfPaciente(e.target.value)}
+          disabled={isProcessing}
+        />
+      </div>
+
       <div className="recording-section">
       <div className="recording-controls">
         <button 
           className={`record-main-btn ${isRecording ? 'recording' : ''}`}
-          onClick={isRecording ? stopRecording : startRecording}
-          disabled={isProcessing || !accepted}
-          title={isProcessing ? 'Processando áudio...' : (!accepted ? 'Marque a declaração para habilitar a transcrição' : 'Iniciar gravação')}
+          onClick={() => {
+            if (isProcessing) return
+            if (!accepted) {
+              // show temporary warning
+              setAcceptanceWarning(true)
+              setTimeout(() => setAcceptanceWarning(false), 4000)
+              return
+            }
+            if (isRecording) stopRecording(); else startRecording()
+          }}
+          disabled={isProcessing}
+          title={isProcessing ? 'Processando áudio...' : (isRecording ? 'Parar gravação' : 'Iniciar gravação')}
+          aria-label={isRecording ? 'Parar gravação' : 'Iniciar gravação'}
         >
           {isRecording ? (
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <rect x="6" y="6" width="12" height="12" rx="2" fill="white"/>
             </svg>
           ) : (
-            /* exibe um estetoscópio com baixa opacidade, parecendo parte do fundo */
-            <svg className="stethoscope-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-              <path d="M11 2a2 2 0 0 0-2 2v6.5a0.5 0.5 0 0 1-0.5 0.5h-2a0.5 0.5 0 0 1-0.5-0.5V4a2 2 0 0 0-4 0v6.5A4.5 4.5 0 0 0 6.5 15H8a2 2 0 0 1 2 2v1a2 2 0 0 0 4 0v-1a2 2 0 0 1 2-2h1.5a4.5 4.5 0 0 0 4.5-4.5V4a2 2 0 0 0-4 0v6.5a0.5 0.5 0 0 1-0.5 0.5h-2a0.5 0.5 0 0 1-0.5-0.5V4a2 2 0 0 0-2-2z" fill="currentColor" />
-              <circle cx="20" cy="18" r="2" fill="currentColor" />
+            /* exibe um ícone de play para iniciar gravação */
+            <svg className="stethoscope-icon" width="36" height="36" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <path d="M5 3v18l15-9L5 3z" fill="currentColor" />
             </svg>
           )}
         </button>
 
-          <div className="control-buttons">
-            <button className="control-btn" title="Microfone">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z" fill="currentColor"/>
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="currentColor" strokeWidth="2" fill="none"/>
-              </svg>
-            </button>
-            <button className="control-btn" title="Configurações">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
-                <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-            </button>
-          </div>
+        {/* mensagem de aviso quando clica sem aceitar a declaração */}
+        {acceptanceWarning && (
+          <div className="acceptance-warning">Marque a declaração para habilitar a transcrição</div>
+        )}
 
-          {/* Chat-like input (estilo ChatGPT) */}
-          <div className="chat-area">
-            <div className="chat-messages">
-              {chatMessages.length === 0 ? (
-                <div className="chat-empty">Envie uma mensagem ou use a gravação</div>
-              ) : (
-                chatMessages.map((m, idx) => (
-                  <div key={idx} className={`chat-message ${m.role}`}>
-                    {m.text}
-                  </div>
-                ))
-              )}
-            </div>
+          {/* botões auxiliares removidos: Microfone e Configurações */}
 
-            <div className="chat-input">
-              <textarea
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onKeyDown={onChatKeyDown}
-                placeholder={accepted ? "Digite aqui (Enter para enviar)..." : "Marque a declaração para habilitar a digitação..."}
-                rows={1}
-                disabled={!accepted || isProcessing}
-              />
-              <button
-                className="chat-send"
-                onClick={sendChat}
-                disabled={!accepted || isProcessing || chatInput.trim() === ''}
-                title={!accepted ? 'Marque a declaração para habilitar o envio' : 'Enviar'}
-              >Enviar</button>
-            </div>
-          </div>
+          {/* área de mensagens removida conforme solicitado */}
         </div>
 
         {isProcessing && (

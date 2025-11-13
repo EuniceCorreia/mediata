@@ -121,6 +121,14 @@
   margin-bottom: 2rem;
 }
 
+/* Remove apenas o fundo/linha escura abaixo do header na página Entrar */
+.cadastro-header.no-bg {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+  padding: 0.25rem 0; /* mantém pequeno espaçamento sem a barra colorida */
+}
+
 .back-arrow {
   color: var(--primary-green);
   text-decoration: none;

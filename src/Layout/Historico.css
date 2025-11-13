@@ -169,3 +169,49 @@
 .btn-recarga:hover {
   background: #0056b3;
 }
+
+/* Formatação do campo de busca para combinar com outras páginas */
+.busca-paciente .form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.busca-paciente .form-group input[type="text"] {
+  padding: 0.75rem 1rem;
+  height: 48px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color, #dfe7df);
+  font-size: 1rem;
+  background: white;
+  box-shadow: none;
+  width: 100%;
+}
+
+.btn-buscar {
+  background: var(--primary-green);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-buscar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-limpar {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-limpar:hover {
+  background: #eee;
+}

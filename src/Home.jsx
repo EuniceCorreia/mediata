@@ -36,11 +36,10 @@ function Home() {
             <div className="features-grid">
               <div className="feature-item">
                 <div className="feature-icon">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z"/>
-                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                    <path d="M12 19v4"/>
-                    <path d="M8 23h8"/>
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M12 1a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="currentColor" />
+                    <path d="M19 11v1a7 7 0 0 1-14 0v-1" stroke="currentColor" strokeWidth="1" fill="none" />
+                    <rect x="11" y="16" width="2" height="4" rx="1" fill="currentColor" />
                   </svg>
                 </div>
                 <h3>Transcrição Automática de Áudio em Texto</h3>
@@ -71,9 +70,10 @@ function Home() {
               </div>
               <div className="feature-item">
                 <div className="feature-icon">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    <path d="M9 12l2 2 4-4"/>
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    {/* pen / edit icon */}
+                    <path d="M3 21l1-4 11-11 4 4L8 21H3z" fill="currentColor" />
+                    <path d="M14 7l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 <h3>Edição Rápida e Correção Manual</h3>

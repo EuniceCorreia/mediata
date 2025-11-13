@@ -52,6 +52,11 @@ function NavBar() {
 
   const showBack = location.pathname !== '/'
   const title = niceTitleFromPath(location.pathname)
+  const isRegistroPage = location.pathname === '/registro-paciente'
+  const isHome = location.pathname === '/'
+  const isEntrar = location.pathname === '/entrar'
+  const isCadastro = location.pathname === '/cadastro'
+  const isHistorico = location.pathname === '/historico'
 
   return (
     <nav className="navbar">
@@ -78,16 +83,18 @@ function NavBar() {
         <div className="nav-right">
           <div className="nav-shortcuts" aria-hidden={false}>
 
-            <Link to="/cadastro" className="shortcut" title="Novo cadastro (C)">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span className="shortcut-label">Cadastrar</span>
-              <kbd className="shortcut-key">C</kbd>
-            </Link>
+            {!isRegistroPage && !isCadastro && !isHistorico && (
+              <Link to="/cadastro" className="shortcut" title="Novo cadastro (C)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span className="shortcut-label">Cadastrar</span>
+                <kbd className="shortcut-key">C</kbd>
+              </Link>
+            )}
 
             {/* NOVO: Novo Registro (só se logado) */}
-            {isLoggedIn && (
+            {isLoggedIn && !isRegistroPage && !isEntrar && !isCadastro && !isHome && (
               <Link to="/registro-paciente" className="shortcut" title="Novo registro (R)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" fill="none"/>
@@ -97,8 +104,8 @@ function NavBar() {
               </Link>
             )}
 
-            {/* Mostrar Historico somente quando o usuario estiver logado e na "/registro-paciente" */}
-            {isLoggedIn && (
+            {/* Mostrar Historico quando o usuario estiver logado (não exibimos na Home/Entrar/Cadastro) */}
+            {isLoggedIn && !isHome && !isEntrar && !isCadastro && !isHistorico && (
               <Link to="/historico" className="shortcut" title="Ver historico (H)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M21 12a9 9 0 1 1-3.7-7.1L21 12z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>

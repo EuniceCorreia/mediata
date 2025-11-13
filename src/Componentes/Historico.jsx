@@ -172,22 +172,23 @@ function Historico() {
         {/* NOVO: Seção de busca por paciente (opcional – integrada no content) */}
         <div className="busca-paciente">
           <h4>Buscar Histórico por Paciente</h4>
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+          <div className="form-group" style={{ maxWidth: '700px', width: '100%', marginBottom: '10px' }}>
             <input
               type="text"
               placeholder="Nome do Paciente (ex: teste – busca parcial)"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ flex: 1, padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
             />
-            <button 
-              onClick={buscarPaciente} 
-              disabled={buscandoPaciente || !searchTerm.trim()}
-              className="btn-buscar"
-              style={{ padding: '8px 16px' }}
-            >
-            {buscandoPaciente ? 'Buscando...' : 'Buscar'}
-            </button>
+            <div style={{ marginTop: '8px', display: 'flex', gap: '10px' }}>
+              <button 
+                onClick={buscarPaciente} 
+                disabled={buscandoPaciente || !searchTerm.trim()}
+                className="btn-buscar"
+              >
+                {buscandoPaciente ? 'Buscando...' : 'Buscar'}
+              </button>
+              <button onClick={() => { setSearchTerm(''); setPacienteHistoricos([]); }} className="btn-limpar">Limpar</button>
+            </div>
           </div>
           {error && <p className="error">{error}</p>}  {/* Erro na busca */}
           {pacienteHistoricos.length > 0 ? (
@@ -207,30 +208,7 @@ function Historico() {
         </div>
 
         
-        <div className="recording-controls">
-          <button className="record-btn">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="3"/>
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
-            </svg>
-          </button>
-          <div className="audio-controls">
-            <button className="control-btn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z"/>
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                <path d="M12 19v4"/>
-                <path d="M8 23h8"/>
-              </svg>
-            </button>
-            <button className="control-btn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 12l2 2 4-4"/>
-                <circle cx="12" cy="12" r="10"/>
-              </svg>
-            </button>
-          </div>
-        </div>
+        {/* botões auxiliares removidos - não tinham funcionalidade */}
       </div>
     </div>
   )
