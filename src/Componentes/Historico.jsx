@@ -35,10 +35,7 @@ function Historico() {
       if (response.ok) {
         const data = await response.json();
         setHistoricos(data);  // Set lista real (RegistroPaciente[] ordenados por data)
-        if (data.length > 0) {
-        setSelectedId(data[0].id);  // Seleciona primeiro item por default
-          setSelectedRegistro(data[0]);  // Mostra detalhes do primeiro
-        }
+        // Não selecionar nenhum item por padrão — exige que o usuário clique em uma data
 
       } else {
         const errorText = await response.text();
@@ -84,6 +81,23 @@ function Historico() {
     }
   };
 
+  // Busca automática com debounce: quando o usuário digita, aguardamos 500ms
+  // e então executamos a busca automaticamente se houver >= 3 caracteres.
+  useEffect(() => {
+    const term = searchTerm.trim();
+    if (term.length < 3) {
+      // limpa resultados se o termo for curto
+      setPacienteHistoricos([]);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      buscarPaciente();
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   // NOVO: Recarrega histórico por médico (ex: após novo registro)
   const recarregarHistoricoMedico = () => {
     loadHistorico();
@@ -107,9 +121,33 @@ function Historico() {
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
             <path d="M14 2v6h6"/>
           </svg>
-          <h2>histórico</h2>
+          <h2> Histórico</h2>
         </div>
-        
+
+        {/* Campo de busca movido para a sidebar: abaixo do título e acima da lista de datas */}
+        <div className="busca-paciente">
+          <h4 style={{ marginTop: '0.25rem' }}>Buscar Histórico</h4>
+          <div className="form-group" style={{ width: '100%', marginBottom: '12px' }}>
+            <input
+              type="text"
+              placeholder="Nome do Paciente (ex: teste – busca parcial)"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <div style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
+              <button 
+                onClick={buscarPaciente} 
+                disabled={buscandoPaciente || !searchTerm.trim()}
+                className="btn-buscar"
+                style={{ flex: 1 }}
+              >
+                {buscandoPaciente ? 'Buscando...' : 'Buscar'}
+              </button>
+              <button onClick={() => { setSearchTerm(''); setPacienteHistoricos([]); }} className="btn-limpar">Limpar</button>
+            </div>
+          </div>
+        </div>
+
         <div className="historico-list">
           {historicos.length > 0 ? (
           historicos.map((item) => (
@@ -139,18 +177,17 @@ function Historico() {
           </svg>
         </div>
         
-        <h3>O que o paciente relatou hoje?</h3>
+  <h3>Relato dos pacientes:</h3>
 
-        {/* NOVO: Botão recarregar histórico por médico */}
-        <button onClick={recarregarHistoricoMedico} className="btn-recarga">
-          Recarregar Histórico
-        </button>
-        
-        {/* NOVO: Mostra error se houver (ex: backend erro) */}
-        {error && <p className="error">{error}</p>}
+        {/* Se não houver seleção nem resultados da busca, mostramos apenas o título acima.
+            Caso contrário, exibimos os controles e detalhes abaixo. */}
+        {(selectedRegistro || pacienteHistoricos.length > 0) && (
+          <>
+            {/* Mostra error se houver (ex: backend erro) */}
+            {error && <p className="error">{error}</p>}
 
-       {/* NOVO: Detalhes do item selecionado (se houver) */} 
-       {selectedRegistro ? (
+            {/* Detalhes do item selecionado (se houver) */}
+            {selectedRegistro ? (
           <div className="registro-detalhes">
             <h4>{selectedRegistro.nomePaciente} - {new Date(selectedRegistro.dataConsulta).toLocaleDateString('pt-BR')}</h4>
             <p><strong>Transcrição:</strong></p>
@@ -160,52 +197,44 @@ function Historico() {
             <audio controls src={`${API_BASE.replace('/api', '')}/audios/${selectedRegistro.audioPath}`} style={{ width: '100%' }}>
               Seu browser não suporta áudio.
             </audio>
-          </div>
-      ) : (
-          historicos.length > 0 ? (
-            <p>Selecione um item no histórico para ver detalhes.</p>
-        ) : (
-          <p>Nenhum registro disponível. Registre uma consulta primeiro.</p>
-          )
-        )}
-
-        {/* NOVO: Seção de busca por paciente (opcional – integrada no content) */}
-        <div className="busca-paciente">
-          <h4>Buscar Histórico por Paciente</h4>
-          <div className="form-group" style={{ maxWidth: '700px', width: '100%', marginBottom: '10px' }}>
-            <input
-              type="text"
-              placeholder="Nome do Paciente (ex: teste – busca parcial)"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <div style={{ marginTop: '8px', display: 'flex', gap: '10px' }}>
-              <button 
-                onClick={buscarPaciente} 
-                disabled={buscandoPaciente || !searchTerm.trim()}
-                className="btn-buscar"
-              >
-                {buscandoPaciente ? 'Buscando...' : 'Buscar'}
-              </button>
-              <button onClick={() => { setSearchTerm(''); setPacienteHistoricos([]); }} className="btn-limpar">Limpar</button>
+            {/* Botão Recarregar Histórico abaixo da transcrição */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginTop: '18px' }}>
+              <button onClick={recarregarHistoricoMedico} className="btn-recarga">Recarregar Histórico</button>
             </div>
           </div>
-          {error && <p className="error">{error}</p>}  {/* Erro na busca */}
-          {pacienteHistoricos.length > 0 ? (
-            pacienteHistoricos.map((h) => (
-              <div key={h.id} className="registro-detalhes" style={{ marginTop: '10px' }}>
-                <h5>{h.nomePaciente} - {new Date(h.dataConsulta).toLocaleDateString('pt-BR')}</h5>
-                <p>Médico ID: {h.medicoId}</p>
-                <p><strong>Transcrição:</strong> {h.transcricao}</p>
-                <audio controls src={`${API_BASE.replace('/api', '')}/audios/${h.audioPath}`} style={{ width: '100%' }}>
-                  Seu browser não suporta áudio.
-                </audio>
+            ) : pacienteHistoricos.length > 0 ? (
+          /* Mostrar resultados da busca por paciente no painel central */
+          <div style={{ width: '100%' }}>
+            {pacienteHistoricos.map((h) => (
+              <div key={h.id} className="registro-detalhes" style={{ marginBottom: '18px' }}>
+                <h4>{h.nomePaciente} - {new Date(h.dataConsulta).toLocaleDateString('pt-BR')}</h4>
+                <p><strong>Transcrição:</strong></p>
+                <div className="transcricao-content" style={{ background: '#f9f9f9', padding: '15px', borderRadius: '5px', marginBottom: '12px' }}>
+                  {h.transcricao}
+                </div>
+                {h.audioPath && (
+                  <audio controls src={`${API_BASE.replace('/api', '')}/audios/${h.audioPath}`} style={{ width: '100%' }}>
+                    Seu browser não suporta áudio.
+                  </audio>
+                )}
               </div>
-            ))
+            ))}
+            {/* Botão Recarregar Histórico abaixo dos resultados da busca */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginTop: '18px' }}>
+              <button onClick={recarregarHistoricoMedico} className="btn-recarga">Recarregar Histórico</button>
+            </div>
+          </div>
             ) : (
-            !buscandoPaciente && searchTerm.trim() && <p>Nenhum histórico encontrado para "{searchTerm}".</p>
-          )}
-        </div>
+              historicos.length > 0 ? (
+                <p>Selecione um item no histórico para ver detalhes.</p>
+              ) : (
+                <p>Nenhum registro disponível. Registre uma consulta primeiro.</p>
+              )
+            )}
+          </>
+        )}
+
+        {/* Busca removida do conteúdo principal — permanece apenas na sidebar */}
 
         
         {/* botões auxiliares removidos - não tinham funcionalidade */}
