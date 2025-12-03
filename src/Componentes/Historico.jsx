@@ -31,7 +31,7 @@ function Historico() {
     setError('');
 
     try {
-      const response = await fetch(`${API_BASE}/registro/historico/${medicoId}`);
+      const response = await fetch(`${API_BASE}/api/registro/historico/${medicoId}`);
       if (response.ok) {
         const data = await response.json();
         setHistoricos(data);  // Set lista real (RegistroPaciente[] ordenados por data)
@@ -65,7 +65,7 @@ function Historico() {
     setError('');
     
     try {
-      const response = await fetch(`${API_BASE}/registro/historico-paciente?nomePaciente=${encodeURIComponent(searchTerm)}`);
+      const response = await fetch(`${API_BASE}/api/registro/historico-paciente?nomePaciente=${encodeURIComponent(searchTerm)}`);
       if (response.ok) {
         const data = await response.json();
         setPacienteHistoricos(data);  // Set lista filtrada
@@ -101,6 +101,39 @@ function Historico() {
   // NOVO: Recarrega histórico por médico (ex: após novo registro)
   const recarregarHistoricoMedico = () => {
     loadHistorico();
+  };
+
+  // NOVO: Excluir registro
+  const excluirRegistro = async (registroId) => {
+    if (!window.confirm('Tem certeza que deseja excluir este registro?')) {
+      return;
+    }
+    
+    try {
+      const response = await fetch(`${API_BASE}/api/registro/excluir/${registroId}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        // Remove da lista local
+        setHistoricos(prev => prev.filter(h => h.id !== registroId));
+        
+        // Se era o selecionado, limpa seleção
+        if (selectedId === registroId) {
+          setSelectedId(null);
+          setSelectedRegistro(null);
+        }
+        
+        // Atualiza a lista
+        loadHistorico();
+      } else {
+        const errorText = await response.text();
+        setError(errorText || 'Erro ao excluir registro');
+      }
+    } catch (err) {
+      setError('Erro de conexão: ' + err.message);
+      console.error('Erro ao excluir:', err);
+    }
   };
 
   if (loading) {
@@ -197,8 +230,30 @@ function Historico() {
             <audio controls src={`${API_BASE.replace('/api', '')}/audios/${selectedRegistro.audioPath}`} style={{ width: '100%' }}>
               Seu browser não suporta áudio.
             </audio>
-            {/* Botão Recarregar Histórico abaixo da transcrição */}
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginTop: '18px' }}>
+            {/* Botões: Recarregar e Excluir */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', gap: '10px', marginTop: '18px', alignItems: 'center' }}>
+              <button 
+                onClick={() => excluirRegistro(selectedRegistro.id)} 
+                className="btn-excluir"
+                style={{ 
+                  backgroundColor: '#f44336', 
+                  color: 'white', 
+                  border: 'none', 
+                  padding: '10px 16px', 
+                  borderRadius: '8px', 
+                  cursor: 'pointer',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+                  height: 'auto',
+                  lineHeight: '1'
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#d32f2f'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#f44336'}
+              >
+                Excluir
+              </button>
               <button onClick={recarregarHistoricoMedico} className="btn-recarga">Recarregar Histórico</button>
             </div>
           </div>

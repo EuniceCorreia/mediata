@@ -168,18 +168,18 @@
 /* disclaimer agora faz parte do fluxo da página: rola com o conteúdo
    em vez de ficar fixo sobrepondo outros elementos */
 .disclaimer {
-  position: relative; /* parte do fluxo normal */
-  margin: 2rem auto 0; /* afasta um pouco do conteúdo acima e centraliza */
+  position: relative;
+  margin: 0.6rem auto 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 7px;
   max-width: 880px;
   width: min(92%, 880px);
-  padding: 10px 18px;
+  padding: 6px 10px;
   background: rgba(255,255,255,0.02);
-  border-radius: 10px;
-  z-index: 2; /* mantém acima do background, mas não sobrepõe globalmente */
+  border-radius: 8px;
+  z-index: 2;
 }
 
 /* checkbox dentro do bloco */
@@ -193,12 +193,12 @@
 
 /* label centralizado e com quebra de linha controlada */
 .disclaimer label {
-  font-size: 1.1rem;
+  font-size: 0.8rem;
   color: var(--text-light);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
   text-align: center;
   max-width: 760px;
   white-space: normal; /* permite quebrar em várias linhas sem empurrar para a direita */
@@ -286,13 +286,16 @@
 
 
 .registro-container {
-  min-height: calc(100vh - 80px);
-  padding: 4rem 2rem;
+  flex: 1;
+  padding: 0.5rem 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   position: relative;
   background-color: var(--bg-light);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .stethoscope-background {
@@ -308,31 +311,40 @@
 .form-group {
   width: 100%;
   max-width: 600px;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.2rem;
   align-items: stretch;
 }
 
+.form-group:first-of-type {
+  margin-top: 0;
+}
+
 .form-group input[type="text"] {
-  padding: 0.75rem 1rem;
-  height: 48px; /* altura ajustada conforme solicitação */
-  border-radius: 10px;
+  padding: 0.45rem 0.65rem;
+  height: 38px;
+  border-radius: 8px;
   border: 1px solid var(--border-color, #dfe7df);
-  font-size: 1rem;
-  background: white;
-  box-shadow: none;
+  font-size: 0.9rem;
+  background: white !important;
+  background-color: white !important;
+  box-sizing: border-box;
 }
 
 .form-group input[type="text"]:disabled {
-  opacity: 0.6;
+  background: #f5f5f5 !important;
+  background-color: #f5f5f5 !important;
+  opacity: 0.7;
 }
 
 .registro-container h1 {
-  font-size: 2.5rem;
+  font-size: 1.4rem;
   color: var(--text-dark);
-  margin-bottom: 4rem;
+  margin-bottom: 0.75rem;
+  margin-top: 0.25rem;
   z-index: 2;
   position: relative;
   text-align: center;
@@ -343,21 +355,31 @@
   position: relative;
   width: 100%;
   max-width: 600px;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .recording-controls {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  min-height: 65px;
+  flex-shrink: 0;
 }
 
 .record-main-btn {
-  width: 120px;
-  height: 120px;
+  width: 65px;
+  height: 65px;
+  min-width: 65px;
+  min-height: 65px;
   border-radius: 50%;
-  border: 4px solid var(--light-green);
+  border: 3px solid var(--light-green);
   background-color: var(--light-green);
   color: white;
   cursor: pointer;
@@ -365,6 +387,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .record-main-btn:hover {
@@ -375,8 +398,8 @@
 
 /* estiliza o ícone do estetoscópio dentro do botão de gravação */
 .record-main-btn .stethoscope-icon {
-  width: 56px;
-  height: 56px;
+  width: 45px;
+  height: 45px;
   color: rgba(255,255,255,0.9); /* cor base para sobrepor no botão */
   opacity: 0.28; /* baixa opacidade para parecer parte do fundo */
   transition: opacity 0.25s ease, transform 0.25s ease;
@@ -428,19 +451,25 @@
 }
 
 .transcript-section {
-  margin-top: 2rem;
+  margin-top: 0.5rem;
+  position: relative;
 }
 
 .transcript-section textarea {
   width: 100%;
-  padding: 1.75rem;
+  padding: 0.4rem;
   border: 2px solid var(--light-green);
-  border-radius: 12px;
-  font-size: 18px; /* maior para melhor legibilidade */
-  line-height: 1.5;
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 1.2;
   font-family: 'Poppins', sans-serif;
-  min-height: 220px; /* torna o quadrado maior por padrão */
+  min-height: 45px;
   resize: vertical;
+  background: white;
+}
+
+.transcript-section textarea:disabled {
+  background: #f5f5f5;
 }
 
 .transcript-section textarea:focus {
@@ -451,3 +480,169 @@
 /* Chat area removed from markup; styles kept only if needed later */
 
 /* segunda definição removida para evitar conflito */
+
+/* Responsividade para RegistroPaciente */
+@media (max-width: 1024px) {
+  .registro-container {
+    padding: 3rem 1.5rem;
+  }
+
+  .registro-container h1 {
+    font-size: 2rem;
+  }
+
+  .recording-section {
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 768px) {
+  .registro-container {
+    padding: 2rem 1rem;
+  }
+
+  .registro-container h1 {
+    font-size: 1.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .recording-section {
+    max-width: 100%;
+  }
+
+  .record-main-btn {
+    width: 90px;
+    height: 90px;
+  }
+
+  .record-main-btn .stethoscope-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .form-group {
+    max-width: 100%;
+  }
+
+  .transcript-section textarea {
+    min-height: 180px;
+    padding: 1.25rem;
+    font-size: 16px;
+  }
+
+  .disclaimer {
+    max-width: 100%;
+    padding: 10px 14px;
+  }
+
+  .disclaimer label {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .registro-container {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .registro-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .record-main-btn {
+    width: 70px;
+    height: 70px;
+  }
+
+  .record-main-btn .stethoscope-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .form-group input[type="text"] {
+    height: 44px;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.95rem;
+  }
+
+  .transcript-section textarea {
+    min-height: 150px;
+    padding: 1rem;
+    font-size: 15px;
+  }
+
+  .btn-salvar {
+    padding: 8px !important;
+    font-size: 0.95rem;
+  }
+
+  .disclaimer {
+    padding: 8px 12px;
+  }
+
+  .disclaimer label {
+    font-size: 0.85rem;
+  }
+
+  .disclaimer input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Avisos (sucesso / erro) */
+.alert {
+  max-width: 880px;
+  width: min(94%, 880px);
+  margin: 0 auto 1rem;
+  padding: 12px 16px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 6px 18px rgba(34,34,34,0.06);
+  font-weight: 500;
+  z-index: 999;
+}
+
+.alert.success {
+  background: linear-gradient(90deg, #e6f7ed 0%, #f3fff6 100%);
+  color: #1b5e20;
+  border: 1px solid rgba(27,94,32,0.12);
+}
+
+.alert.error {
+  background: linear-gradient(90deg, #fff0f0 0%, #fff6f6 100%);
+  color: #b71c1c;
+  border: 1px solid rgba(183,28,28,0.12);
+}
+
+.alert span {
+  flex: 1 1 auto;
+  text-align: left;
+}
+
+.alert .alert-close {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+  padding: 6px 8px;
+}
+
+/* animação sutil de entrada */
+.alert {
+  animation: slideUp 260ms ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(6px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

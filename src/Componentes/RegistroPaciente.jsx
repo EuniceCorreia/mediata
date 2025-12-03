@@ -1,17 +1,19 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import '../Layout/RegistroPaciente.css';
 import { API_BASE } from '../constants';
 
 function RegistroPaciente() {
   const [isRecording, setIsRecording] = useState(false)
   const [transcript, setTranscript] = useState('')
-  const [isProcessing, setIsProcessing] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)  // Para transcrição
+  const [isSaving, setIsSaving] = useState(false)  // Para salvamento
   const [accepted, setAccepted] = useState(false)
   const [acceptanceWarning, setAcceptanceWarning] = useState(false)
   const [error, setError] = useState('');  // NOVO: Para erros do backend
   const [success, setSuccess] = useState('');  // NOVO: Para sucesso (ex: "Salva!")
   const [nomePaciente, setNomePaciente] = useState('');  // NOVO: Input para nome (obrigatório para backend)
   const [cpfPaciente, setCpfPaciente] = useState('');  // NOVO: Input para CPF
+  const [audioBlob, setAudioBlob] = useState(null);  // NOVO: Armazena o áudio gravado
   const mediaRecorderRef = useRef(null) 
   
   
@@ -20,6 +22,10 @@ function RegistroPaciente() {
   const startRecording = async () => {
     if (!medicoId) {
       setError('Faça login primeiro (MedicoId não encontrado).');
+      return;
+    }
+    if (!nomePaciente.trim()) {
+      setError('Digite o nome do paciente antes de gravar.');
       return;
     }
     try {
@@ -33,9 +39,10 @@ function RegistroPaciente() {
       }
 
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(chunks, { type: 'audio/wav' })
-        // Integração com backend: Envia para transcrição/salvar
-        await enviarParaBackend(audioBlob, nomePaciente)
+        const blob = new Blob(chunks, { type: 'audio/mp4' })
+        setAudioBlob(blob);  // Armazena o áudio
+        // Envia automaticamente para transcrever (sem salvar ainda)
+        await transcrevAudio(blob);
       }
 
       mediaRecorder.start()
@@ -54,45 +61,116 @@ function RegistroPaciente() {
     }
   }
 
-  // NOVO: Função para enviar áudio ao backend (POST /api/registro/gravar)
-  const enviarParaBackend = async (audioBlob, nomePacienteInput) => {
-    if (!nomePacienteInput.trim()) {
-      setError('Digite o nome do paciente antes de gravar.');
+  // NOVO: Função para transcrever áudio sem salvar
+  const transcrevAudio = async (audioBlob) => {
+    setIsProcessing(true);
+    setError('');
+    
+    if (!medicoId) {
+      setError('MedicoId não encontrado. Faça login novamente.');
+      setIsProcessing(false);
       return;
     }
+    
+    const audioFile = new File([audioBlob], 'gravado.m4a', { type: 'audio/mp4' });
+    const formData = new FormData();
+    formData.append('MedicoId', medicoId);
+    formData.append('NomePaciente', nomePaciente || 'Paciente Anônimo');
+    formData.append('CpfPaciente', cpfPaciente || '');
+    formData.append('AudioArquivo', audioFile);
+    
+    console.log('Transcrevendo áudio...');
+    
+    try {
+      const response = await fetch(`${API_BASE}/api/registro/gravar`, {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Transcrição recebida:', data);
+        setTranscript(data.transcricao || '');  // Apenas preenche o campo, não salva
+      } else {
+        const errorText = await response.text();
+        console.error('Erro na transcrição:', response.status, errorText);
+        setError(`Erro ao transcrever: ${errorText || 'Erro desconhecido'}`);
+      }
+    } catch (err) {
+      console.error('Erro na transcrição:', err);
+      setError('Erro de conexão: ' + err.message);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // NOVO: Função para enviar áudio ao backend (POST /api/registro/gravar)
+  const enviarParaBackend = async (audioBlob, nomePacienteInput) => {
     setIsProcessing(true)
     setError('')
     setSuccess('')
+    
+    // Validação do MedicoId
+    if (!medicoId) {
+      setError('MedicoId não encontrado. Faça login novamente.');
+      setIsProcessing(false);
+      return;
+    }
+    
     // Cria File do Blob (backend aceita como AudioArquivo)
-    const audioFile = new File([audioBlob], 'gravado.wav', { type: 'audio/wav' })
+    const audioFile = new File([audioBlob], 'gravado.m4a', { type: 'audio/mp4' })
     const formData = new FormData()
     formData.append('MedicoId', medicoId)
     formData.append('NomePaciente', nomePacienteInput)
-  formData.append('CpfPaciente', cpfPaciente || '')
+    formData.append('CpfPaciente', cpfPaciente || '')
     formData.append('AudioArquivo', audioFile)  // Multipart para backend
+    
+    console.log('Enviando:', { medicoId, nomePaciente: nomePacienteInput, cpf: cpfPaciente, audioSize: audioFile.size });
+    
+    // Log do FormData
+    for (let pair of formData.entries()) {
+      console.log('FormData:', pair[0], '=', pair[1] instanceof File ? `File(${pair[1].name}, ${pair[1].size} bytes)` : pair[1]);
+    }
+    
     try {
-      const response = await fetch(`${API_BASE}/registro/gravar`, {
+      const response = await fetch(`${API_BASE}/api/registro/gravar`, {
         method: 'POST',
         body: formData,  // Sem headers (FormData auto)
       })
       if (response.ok) {
         const data = await response.json()
-        // Backend retorna RegistroPaciente com transcricao (mock ou Flask PT-BR)
-        setTranscript(data.transcricao)  // Set real transcrição
-        setSuccess(`Consulta salva! ID: ${data.id}. Áudio: ${data.audioPath}`)
+        console.log('Resposta do servidor:', data);
+        // Backend retorna RegistroPaciente com transcricao
+        setTranscript(data.transcricao || '')  // Set real transcrição
+        setSuccess(`Consulta salva! ID: ${data.id}.`) // mensagem curta para o usuário
         setNomePaciente('')  // Limpa input
+        setCpfPaciente('')  // Limpa CPF
         console.log('Registro OK:', data)
       } else {
         const errorText = await response.text()
-        setError(errorText || 'Erro ao salvar consulta')
+        console.error('Erro do servidor:', response.status, errorText);
+        setError(`Erro ${response.status}: ${errorText || 'Erro ao salvar consulta'}`)
       }
-      } catch (err) {
+    } catch (err) {
+      console.error('Erro no envio:', err);
       setError('Erro de conexão: ' + err.message)
-      console.error('Erro no envio:', err)
     } finally {
       setIsProcessing(false)
     }
   }
+
+  // limpa automaticamente mensagens de sucesso/erro após alguns segundos
+  useEffect(() => {
+    if (!success) return
+    const t = setTimeout(() => setSuccess(''), 5000)
+    return () => clearTimeout(t)
+  }, [success])
+
+  useEffect(() => {
+    if (!error) return
+    const t = setTimeout(() => setError(''), 7000)
+    return () => clearTimeout(t)
+  }, [error])
 
   // chat-like input
   const [chatInput, setChatInput] = useState('')
@@ -119,32 +197,71 @@ function RegistroPaciente() {
 
   // NOVO: Salvar manual (se editar transcript ou chat – após accepted)
   const salvarConsulta = async () => {
-    if (!accepted || !transcript.trim()) {
-      setError('Marque a declaração e edite a transcrição antes de salvar.')
-      return
+    if (!accepted) {
+      setError('Marque a declaração antes de salvar.');
+      return;
     }
-    // Envia transcript editado como texto (sem áudio novo – backend salva como registro)
-    const formData = new FormData()
-    formData.append('MedicoId', medicoId)
-    formData.append('NomePaciente', nomePaciente || 'Paciente Anônimo')  // Default se vazio
-    formData.append('CpfPaciente', cpfPaciente || '')
-    formData.append('Transcricao', transcript)  // Transcript editado/chat
+    
+    if (!medicoId) {
+      setError('MedicoId não encontrado. Faça login novamente.');
+      return;
+    }
+    
+    if (!audioBlob && !transcript.trim()) {
+      setError('Grave um áudio ou digite uma transcrição antes de salvar.');
+      return;
+    }
+    
+    setIsSaving(true);
+    setError('');
+    setSuccess('');
+    
+    // Envia audio + transcript editado
+    const formData = new FormData();
+    formData.append('MedicoId', medicoId);
+    formData.append('NomePaciente', nomePaciente || 'Paciente Anônimo');
+    formData.append('CpfPaciente', cpfPaciente || '');
+    
+    if (audioBlob) {
+      const audioFile = new File([audioBlob], 'gravado.m4a', { type: 'audio/mp4' });
+      formData.append('AudioArquivo', audioFile);
+    }
+    
+    if (transcript.trim()) {
+      formData.append('Transcricao', transcript);
+    }
+    
+    console.log('Salvando manualmente:', { medicoId, nomePaciente: nomePaciente || 'Paciente Anônimo', cpf: cpfPaciente, temAudio: !!audioBlob, temTranscript: !!transcript.trim() });
+    
+    // Log do FormData
+    for (let pair of formData.entries()) {
+      console.log('FormData:', pair[0], '=', pair[1]);
+    }
+    
     try {
-      const response = await fetch(`${API_BASE}/registro/gravar`, {
+      const response = await fetch(`${API_BASE}/api/registro/gravar`, {
         method: 'POST',
         body: formData,
-      })
+      });
       if (response.ok) {
-        const data = await response.json()
-        setSuccess(`Consulta salva manualmente! ID: ${data.id}`)
-        setChatMessages([])  // Limpa chat
-        console.log('Salvar manual OK:', data)
+        const data = await response.json();
+        console.log('Salvar manual OK:', data);
+        setSuccess(`Consulta salva! ID: ${data.id}`);
+        setTranscript('');
+        setNomePaciente('');
+        setCpfPaciente('');
+        setAudioBlob(null);  // Limpa áudio
+        setChatMessages([]);
       } else {
-        const errorText = await response.text()
-        setError(errorText)
+        const errorText = await response.text();
+        console.error('Erro ao salvar:', response.status, errorText);
+        setError(`Erro ${response.status}: ${errorText || 'Erro ao salvar'}`);
       }
     } catch (err) {
-      setError('Erro de conexão: ' + err.message)
+      console.error('Erro no salvamento manual:', err);
+      setError('Erro de conexão: ' + err.message);
+    } finally {
+      setIsSaving(false);
     }
   }
 
@@ -156,6 +273,20 @@ function RegistroPaciente() {
           <circle cx="20" cy="18" r="2"/>
         </svg>
       </div>
+
+      {success && (
+        <div className="alert success" role="status">
+          <span>{success}</span>
+          <button className="alert-close" onClick={() => setSuccess('')} aria-label="Fechar">×</button>
+        </div>
+      )}
+
+      {error && (
+        <div className="alert error" role="alert">
+          <span>{error}</span>
+          <button className="alert-close" onClick={() => setError('')} aria-label="Fechar">×</button>
+        </div>
+      )}
 
       <h1>O que o paciente relatou hoje?</h1>
 
@@ -224,38 +355,68 @@ function RegistroPaciente() {
           {/* área de mensagens removida conforme solicitado */}
         </div>
 
-        {isProcessing && (
-          <div className="processing-indicator">
-            <p>Processando áudio...</p>
-          </div>
-        )}
-
-        {transcript && (
-          <div className="transcript-section">
-            <textarea 
-              value={transcript}
-              onChange={(e) => {
-                // permitir edição da transcrição apenas se aceito
-                if (!accepted) return
-                setTranscript(e.target.value)
-              }}
-              placeholder={accepted ? "A transcrição aparecerá aqui..." : "Marque a declaração para habilitar a edição da transcrição..."}
-              readOnly={!accepted}
-              disabled={!accepted || isProcessing}
-              rows="10"
-            />
-            {/* NOVO: Botão para salvar manual (após edição ou chat) */}
-            <button 
-              onClick={salvarConsulta}
-              disabled={!accepted || isProcessing || !transcript.trim()}
-              className="btn-salvar"
-              style={{ marginTop: '10px', padding: '10px', width: '100%' }}
-              title={!accepted ? 'Marque a declaração' : 'Salvar consulta editada'}
-            >
-              {isProcessing ? 'Salvando...' : 'Salvar Consulta Editada'}
-            </button>
-          </div>
-        )}
+        <div className="transcript-section">
+          {isProcessing && (
+            <div style={{ 
+              position: 'absolute', 
+              top: '50%', 
+              left: '50%', 
+              transform: 'translate(-50%, -50%)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '8px',
+              zIndex: 10,
+              pointerEvents: 'none'
+            }}>
+              <div className="spinner" style={{
+                border: '3px solid #f3f3f3',
+                borderTop: '3px solid var(--primary-green)',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                animation: 'spin 1s linear infinite'
+              }}></div>
+              <p style={{ margin: 0, fontSize: '12px', color: '#333' }}>Processando...</p>
+            </div>
+          )}
+          <textarea 
+            value={transcript}
+            onChange={(e) => {
+              // permitir edição da transcrição apenas se aceito
+              if (!accepted) return
+              setTranscript(e.target.value)
+            }}
+            placeholder={accepted ? "Aguardando transcrição..." : "Marque a declaração para habilitar a edição da transcrição..."}
+            readOnly={!accepted}
+            disabled={!accepted || isProcessing}
+            rows="10"
+          />
+          {/* NOVO: Botão para salvar manual (após edição ou chat) */}
+          <button 
+            onClick={salvarConsulta}
+            disabled={!accepted || isSaving || (!audioBlob && !transcript.trim())}
+            className="btn-salvar"
+            style={{ marginTop: '10px', padding: '10px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+            title={!accepted ? 'Marque a declaração' : 'Salvar consulta com áudio e transcrição'}
+          >
+            {isSaving ? (
+              <>
+                <div className="spinner" style={{
+                  border: '2px solid #ffffff',
+                  borderTop: '2px solid transparent',
+                  borderRadius: '50%',
+                  width: '16px',
+                  height: '16px',
+                  animation: 'spin 1s linear infinite'
+                }}></div>
+                Salvando...
+              </>
+            ) : (
+              'Salvar Consulta'
+            )}
+          </button>
+        </div>
       </div>
 
       <div className="disclaimer">

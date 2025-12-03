@@ -6,8 +6,12 @@
 
 /* Home Styles - versão consolidada e limpa */
 .home-container {
-  min-height: calc(100vh - 100px);
-  padding: 3rem 2rem;
+  flex: 1;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .home-main {
@@ -17,21 +21,23 @@
 
 .home-content {
   display: grid;
-  grid-template-columns: 1.3fr 0.9fr; /* mais espaço para o texto principal */
-  gap: 3rem; /* mais folga entre colunas */
+  grid-template-columns: 1.3fr 0.9fr;
+  gap: 1.25rem;
   align-items: center;
+  margin-left: 2rem;
 }
 
 .home-text {
-  padding: 3rem 0;
+  padding: 0.75rem 0;
+  margin-top: 1.5rem;
 }
 
   .home-title {
-    font-size: 4rem; /* título maior */
+    font-size: 2.6rem;
     font-weight: 300;
     color: var(--primary-green);
-    margin-bottom: 1.75rem;
-    line-height: 1.08;
+    margin-bottom: 1rem;
+    line-height: 1.1;
   }
 
   .title-part-one {
@@ -46,72 +52,71 @@
   }
 
   .home-description {
-    font-size: 2.1rem; 
-    line-height: 1.75; /* mais espaço entre linhas */
+    font-size: 1.15rem; 
+    line-height: 1.45;
     color: var(--text-light);
-    margin-bottom: 3rem; /* mais espaço antes dos botões */
+    margin-bottom: 1.25rem;
     text-align: justify;
-    max-width: 68ch; /* largura de leitura otimizada */
+    max-width: 68ch;
     letter-spacing: 0.01em;
   }
 
   .home-highlight {
     color: var(--primary-green);
     font-weight: 700;
-    margin-bottom: 2rem;
-    font-size: 1.6rem; /* aumentado para dar mais destaque */
+    margin-bottom: 1.25rem;
+    font-size: 1.15rem;
     line-height: 1.2;
     letter-spacing: 0.01em;
   }
 
   .home-buttons {
     display: flex;
-    gap: 1.25rem;
-    margin-bottom: 2.25rem;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
   }
 
 
   .home-features {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* alinhar ao topo */
+    justify-content: flex-start;
     align-items: flex-start;
-    align-self: start; /* garantir que a célula do grid fique alinhada ao início */
-    padding-top: 1.6rem; /* aumento da distância para o header */
+    align-self: start;
+    padding-top: 0.5rem;
   }
 
   .home-features h2 {
     color: var(--text-dark);
-    font-size: 1.75rem;
-    margin-bottom: 2rem;
+    font-size: 1.35rem;
+    margin-bottom: 1.1rem;
     font-weight: 600;
   }
 
   .features-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
+    gap: 0.9rem;
     justify-items: center;
     align-items: center;
   }
 
   .feature-item {
     text-align: center;
-    padding: 1rem;
-    max-width: 260px; /* um pouco mais largo */
-    transition: background-color 220ms ease, transform 220ms ease;
+    padding: 0.5rem;
+    max-width: 180px;
     border-radius: 12px;
   }
 
   .feature-icon {
     color: var(--light-green);
-    margin-bottom: 1rem;
+    margin-bottom: 0.7rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(47, 161, 107, 0.08); /* leve círculo de destaque */
-    width: 84px;
-    height: 84px;
+    background: rgba(47, 161, 107, 0.08);
+    width: 62px;
+    height: 62px;
     border-radius: 999px;
     margin-left: auto;
     margin-right: auto;
@@ -119,39 +124,18 @@
   }
 
   .feature-item h3 {
-    font-size: 1.15rem; /* aumentado */
+    font-size: 0.95rem;
     color: var(--text-dark);
     font-weight: 600;
-    line-height: 1.4;
-    margin-top: 0.75rem;
-    transition: color 220ms ease, transform 220ms ease;
+    line-height: 1.3;
+    margin-top: 0.5rem;
   }
 
   .feature-icon svg {
-    width: 44px;
-    height: 44px;
+    width: 32px;
+    height: 32px;
     display: block;
     fill: currentColor;
-  }
-
-  /* Hover: trocar cor do bloco, ícone e título */
-  .feature-item:hover {
-    background-color: rgba(47,161,107,0.06);
-    transform: translateY(-4px);
-  }
-
-  .feature-item:hover .feature-icon {
-    background: var(--primary-green);
-    color: white;
-    transform: scale(1.06);
-  }
-
-  .feature-item:hover .feature-icon svg {
-    fill: white;
-  }
-
-  .feature-item:hover h3 {
-    color: var(--primary-green);
   }
 
   /* Responsividade: empilhar colunas e centralizar funcionalidades em telas pequenas */
@@ -212,6 +196,49 @@
       font-size: 1.18rem; /* ainda maior que antes p melhor leitura em mobile */
       line-height: 1.6;
       max-width: 100%;
+    }
+  }
+
+  /* Responsividade adicional para tablets e notebooks pequenos */
+  @media (max-width: 1024px) {
+    .home-container {
+      padding: 2rem 1.5rem;
+    }
+
+    .home-title {
+      font-size: 3rem;
+    }
+
+    .home-description {
+      font-size: 1.6rem;
+    }
+
+    .home-content {
+      gap: 2rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .home-container {
+      padding: 1.5rem 1rem;
+    }
+
+    .home-title {
+      font-size: 2.2rem;
+    }
+
+    .home-description {
+      font-size: 1.1rem;
+    }
+
+    .home-buttons {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      width: 100%;
+      text-align: center;
     }
   }
   .dashboard-welcome {
