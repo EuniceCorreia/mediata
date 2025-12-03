@@ -1,10 +1,11 @@
 .navbar {
   background: linear-gradient(90deg, var(--primary-green), #2fa16b 60%);
-  padding: 1.2rem 1.4rem; /* ainda maior altura do header */
-  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.16);
+  padding: 0.5rem 1rem;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
   position: sticky;
   top: 0;
   z-index: 40;
+  flex-shrink: 0;
 }
 
 .nav-container {

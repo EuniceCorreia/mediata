@@ -21,7 +21,7 @@ function Entrar() {
     setLoading(true)
 
     try {
-      const response = await fetch(`${API_BASE}/medico/login`, {
+      const response = await fetch(`${API_BASE}/api/medico/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,8 +29,7 @@ function Entrar() {
         body: JSON.stringify({ 
           email: form.usuario,  // Mapeia 'usuario' para 'email'
           senha: form.senha 
-        }),
-        
+        })
       })
     if (response.ok) {
         const data = await response.json()

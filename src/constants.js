@@ -1,1 +1,1 @@
-export const API_BASE = 'https://localhost:7027/api';  // Seu backend (mude para prod URL)
+export const API_BASE = 'https://localhost:7060';  // Seu backend (mude para prod URL)

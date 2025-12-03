@@ -10,7 +10,8 @@ function Cadastro() {
     dataNascimento: '',
     crm: '',
     email: '',
-    senha: ''
+    senha: '',
+    registros: []   // inicializado vazio
   })
 
   const navigate = useNavigate()  // <-- useNavigate para redirecionar
@@ -28,11 +29,23 @@ function Cadastro() {
     console.log('Dados do cadastro:', formData)
     // Aqui seria implementada a lógica de cadastro
 
+    // Ajustar data para formato ISO completo
+    const dataISO = formData.dataNascimento 
+      ? new Date(formData.dataNascimento).toISOString() 
+      : null
+
+    // Montar payload compatível com MedicoDTO
+    const payload = {
+      ...formData,
+      dataNascimento: dataISO,
+      registros: [] // obrigatório para evitar erro 400
+    }
+
    try {
-      const response = await fetch(`${API_BASE}/medico/cadastrar`, {
+      const response = await fetch(`${API_BASE}/api/medico/cadastrar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       })
 
       if (response.ok) {
